@@ -1,0 +1,45 @@
+As an Author:
+create/edit/delete posts
+pull in my Github activity to my “stream”
+post my own and display other people’s posts on my “stream”
+link to images, which are hosted on my admin’s server
+
+edit profile
+
+follow authors (until they accept my request)
+be notified of friend requests
+befriend/unfriend local/remote authors
+
+authentications are required for accessing images
+my posts are accessible authors depending on their relationships with me - [myself, friends on my host, friends, FOAF, public]
+
+be able to browse the posts of others depending on my status
+comment on posts that I can access
+
+
+
+Restrictions:
+other authors cannot modify my data
+I want a consistent identity per server
+posts can be in simple plain text or markdown.
+be able to make private posts that are unlisted and accessible by myself only, but are shareable by URI alone (or for embedding images)
+
+
+
+
+As a Server Admin:
+add/modify/remove authors
+allow user signups but require my OK to finally be on my server
+keep track of all of author’s friends
+
+share/not share posts or images with users on other servers
+get the posts of my author’s friends with restful interfaces
+
+be able to add/remove nodes to share with them.
+set limit number of nodes connecting to me via authentication
+all node-to-node connections must be authenticated with HTTP Basic Auth (any connections without credentials will be disabled)
+
+
+Implied Features:
+host multiple authors on my server
+host images
