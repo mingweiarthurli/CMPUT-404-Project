@@ -8,9 +8,12 @@ router = routers.DefaultRouter(trailing_slash=True)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/users/', include('users.urls')),
+    path('api/', include([
+        path('', include('users.urls')),
+        path('', include('posts.urls')),
+        path('', include('friendships.urls'))]
+    )),
     #path('api/comments', include('comments.urls')),
-    path('api/posts/', include('posts.urls')),
-    path('api/friendships/', include('friendships.urls')),
-    path('api-auth/', include('rest_framework.urls')),
+    #path('api/friendships/', include('friendships.urls')),
+    #path('api-auth/', include('rest_framework.urls')),
 ]

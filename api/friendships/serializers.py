@@ -1,17 +1,17 @@
 from rest_framework import serializers
-from .models import Followers, FriendRequests, Friends
+from .models import Follower, FriendRequest, Friend
 
-class FollowersSerializer(serializers.HyperlinkedModelSerializer):
+class FollowerSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Followers
+        model = Follower
         fields = ('requester', 'receiver')
 
-class FriendRequestsSerializer(serializers.HyperlinkedModelSerializer):
+class FriendRequestSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = FriendRequests
+        model = FriendRequest
         fields = ('requester', 'receiver')
 
-class FriendsSerializer(serializers.HyperlinkedModelSerializer):
+class FriendSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Followers
+        model = Friend
         fields = ('author', 'friends')

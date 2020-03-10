@@ -1,16 +1,16 @@
 from django.shortcuts import render
 from rest_framework import viewsets
-from .models import Followers, FriendRequests, Friends
-from .serializers import FollowersSerializer, FriendRequestsSerializer, FriendsSerializer
+from .models import Follower, FriendRequest, Friend
+from .serializers import FollowerSerializer, FriendRequestSerializer, FriendSerializer
 
-class FollowersView(viewsets.ModelViewSet):
-    queryset = Followers.objects.all()
-    serializer_class = FollowersSerializer
+class FollowerView(viewsets.ModelViewSet):
+    queryset = Follower.objects.all()
+    serializer_class = FollowerSerializer
 
-class FriendRequestsView(viewsets.ModelViewSet):
-    queryset = FriendRequests.objects.all()
-    serializer_class = FriendRequestsSerializer
+class FriendRequestView(viewsets.ModelViewSet):
+    queryset = FriendRequest.objects.all()
+    serializer_class = FriendRequestSerializer
 
-class FriendsView(viewsets.ModelViewSet):
-    queryset = Friends.objects.all()
-    serializer_class = FriendsSerializer
+class FriendView(viewsets.ModelViewSet):
+    queryset = Friend.objects.all()
+    serializer_class = FriendSerializer

@@ -2,7 +2,7 @@ from django.db import models
 from django.utils import timezone
 from users.models import Author
 
-class Posts(models.Model):
+class Post(models.Model):
     title = models.CharField(blank=True, default='Title Unknown', max_length=100) #
     source = models.URLField(null=False, blank=False) # ph
     origin = models.URLField(null=False, blank=False) # ph
