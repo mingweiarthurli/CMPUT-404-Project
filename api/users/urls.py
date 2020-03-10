@@ -3,8 +3,9 @@ from . import views
 from rest_framework import routers
 
 router = routers.DefaultRouter()
-router.register('authors', views.AuthorView)
+router.register(r'authors', views.AuthorViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    #path('api-auth/', include('rest_framework.urls', namespace='rest_framework_api'))
 ]
