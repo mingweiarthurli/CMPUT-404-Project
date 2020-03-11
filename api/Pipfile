@@ -8,6 +8,10 @@ verify_ssl = true
 [packages]
 django = "==3.0.3"
 djangorestframework = "*"
+pipenv = "*"
+install = "*"
+djangorestframework-jwt = "*"
+pip = "*"
 
 [requires]
 python_version = "3.8"
