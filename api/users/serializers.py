@@ -1,24 +1,18 @@
 from rest_framework import serializers
-from .models import Author
-from profiles.models import Profiles
-from django.contrib.auth import authenticate
-from django.contrib.auth.models import update_last_login
-from rest_framework_jwt.settings import api_settings
+from .models import Author, Profile
 
-JWT_PAYLOAD_HANDLER = api_settings.JWT_PAYLOAD_HANDLER
-JWT_ENCODE_HANDLER = api_settings.JWT_ENCODE_HANDLER
-
-
-class AuthorSerializer(serializers.ModelSerializer):
+class AuthorSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Profiles
+        model = Author
         # Note: id, url and host are not modifiable by authors themselves
-        fields = ('a_email', 'a_firstname', 'a_lastname',
-                  'a_description', 'a_gender')
-        read_only_fields = ('id')
+        fields = ('id', 'url', 'displayName')
 
+class ProfileSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ('id', 'url', 'alias', 'host', 'github', 'a_email', 'a_lastname', 'a_firstname', 'a_description', 'a_gender')
 
-class SignupSerializer(serializers.ModelSerializer):
+'''class SignupSerializer(serializers.HyperlinkedModelSerializer):
 
     profile = AuthorSerializer(required=False)
 
@@ -30,7 +24,7 @@ class SignupSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         profile_data = validated_data.pop('profile')
         new_user = Author.objects.create_user(**validated_data)
-        Profiles.objects.create(
+        Profile.objects.create(
             author=new_user,
             email=profile_data['email'],
             firstname=profile_data['firstname'],
@@ -66,3 +60,4 @@ class SigninSerializer(serializers.Serializer):
             'displayName': user.displayName,
             'token': jwt_token
         }
+'''

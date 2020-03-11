@@ -1,12 +1,18 @@
-from .models import Author
-from rest_framework import status, viewsets
-from rest_framework.generics import CreateAPIView, RetrieveAPIView
-from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
-from .serializers import SigninSerializer, SignupSerializer
+from django.shortcuts import render
+from rest_framework import status, viewsets, permissions
+from .serializers import AuthorSerializer, ProfileSerializer
+from .models import Author, Profile
 
+class AuthorView(viewsets.ModelViewSet):
+    queryset = Author.objects.all()
+    serializer_class = AuthorSerializer
 
-class SignupView(CreateAPIView):
+class ProfileView(viewsets.ModelViewSet):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
+
+    
+'''class SignupView(CreateAPIView):
     serializer_class = SignupSerializer
     permission_classes = (AllowAny,)
 
@@ -39,3 +45,4 @@ class SigninView(RetrieveAPIView):
         status_code = status.HTTP_200_OK
 
         return Response(response, status=status_code)
+'''
