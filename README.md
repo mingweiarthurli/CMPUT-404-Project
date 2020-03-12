@@ -29,7 +29,7 @@ Api call to service/api/authors/{author uuid}
   - DELETE: removes the author with the ID specified
 
 Api call to service/api/posts
-  -GET: returns all posts in the database #TODO: only return posts tagged 'public'
+  -GET: returns all posts in the database (TODO: only return posts tagged 'public')
   -POST: allows a post to be added to the database with a generated ID (currently sequential)
   
 Api call to service/api/posts/{post ID}
@@ -39,10 +39,10 @@ Api call to service/api/posts/{post ID}
   
 ----------------------------------- TO BE UPDATED -----------------------------------
   
-Api call to service/api/followers #incomplete
+Api call to service/api/followers (incomplete)
   -GET: returns a list of all follower relationships
   -POST: allows a new follower relationship to be added to the database
   
-Api call to service/api/friendRequests #incomplete
+Api call to service/api/friendRequests (incomplete)
   -GET: returns a list of all freiendRequest relationships
   -POST: allows a new friendRequest relationship to be added to the database
