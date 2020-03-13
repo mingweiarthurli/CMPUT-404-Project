@@ -3,10 +3,10 @@ import { BrowserRouter, Switch, Route } from "react-router-dom";
 
 import Private from "./Private";
 
-import home from "../Component/master/home";
-import signIn from "../Component/master/signIn";
-import signUp from "../Component/master/signUp";
-import posts from "../Component/master/posts";
+import home from "../Pages/home";
+import signIn from "../Pages/signIn";
+import signUp from "../Pages/signUp";
+import posts from "../Pages/posts";
 import privateDashboard from "../Component/private/privateDashboard";
 
 import adminInsert from "../Component/admin/adminInsert";
@@ -21,7 +21,7 @@ const Routes = () => {
         <Route path="/signup" exact component={signUp} />
         <Route path="/posts" exact component={posts} />
         <Private path="/user/dashboard" exact component={privateDashboard} />
-        <Private path="/admin/insert/" exact component={adminInsert} />
+        <Private path="/action/" exact component={adminInsert} />
         <Private path="/admin/insert/:action" exact component={adminActions} />
       </Switch>
     </BrowserRouter>

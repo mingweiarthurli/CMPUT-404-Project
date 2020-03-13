@@ -1,14 +1,7 @@
 import React, { Fragment, useState } from "react";
 import AvatarSelector from "./AvatarSelector";
-import {
-  Label,
-  Menu,
-  Card,
-  Image,
-  Grid,
-  Button,
-  Visibility
-} from "semantic-ui-react";
+import NewPostForm from "../Fragments/NewPostForm";
+import { Label, Menu, Image, Grid, Button, Modal } from "semantic-ui-react";
 
 const TopBar = () => {
   const [activeItem, setActiveItem] = useState("Followers");
@@ -39,33 +32,77 @@ const TopBar = () => {
             />
           </a>
         </Menu.Item>
-        <Menu.Item
-          name="Followers"
-          active={activeItem === "Followers"}
-          onClick={e => handleChange(e, "Followers")}
+        <Modal
+          trigger={
+            <Menu.Item
+              name="Followers"
+              active={activeItem === "Followers"}
+              onClick={e => handleChange(e, "Followers")}
+            >
+              Followers
+              <Label color="teal">x</Label>
+            </Menu.Item>
+          }
         >
-          Followers
-          <Label color="teal">x</Label>
-        </Menu.Item>
-
-        <Menu.Item
-          name="Friends"
-          active={activeItem === "Friends"}
-          onClick={e => handleChange(e, "Friends")}
+          <Modal.Header>Current Followers</Modal.Header>
+          <Modal.Content>
+            <Modal.Description>
+              <p>Followers</p>
+            </Modal.Description>
+          </Modal.Content>
+        </Modal>
+        <Modal
+          trigger={
+            <Menu.Item
+              name="Friends"
+              active={activeItem === "Friends"}
+              onClick={e => handleChange(e, "Friends")}
+            >
+              Friends
+              <Label>y</Label>
+            </Menu.Item>
+          }
         >
-          Friends
-          <Label>y</Label>
-        </Menu.Item>
-
-        <Menu.Item
-          name="Notifications"
-          active={activeItem === "Notifications"}
-          onClick={e => handleChange(e, "Notifications")}
+          <Modal.Header>Current Friends</Modal.Header>
+          <Modal.Content>
+            <Modal.Description>
+              <p>Friends</p>
+            </Modal.Description>
+          </Modal.Content>
+        </Modal>
+        <Modal
+          trigger={
+            <Menu.Item
+              name="Notifications"
+              active={activeItem === "Notifications"}
+              onClick={e => handleChange(e, "Notifications")}
+            >
+              Notifications
+              <Label>z</Label>
+            </Menu.Item>
+          }
         >
-          Notifications
-          <Label>z</Label>
-        </Menu.Item>
+          <Modal.Header>Requests Notifications</Modal.Header>
+          <Modal.Content>
+            <Modal.Description>
+              <p>Notifications</p>
+            </Modal.Description>
+          </Modal.Content>
+        </Modal>
         <Menu.Menu position="right">
+          <Modal
+            trigger={
+              <Menu.Item name="NewPosts">
+                New Post
+                <Label>+</Label>
+              </Menu.Item>
+            }
+          >
+            <Modal.Header>Create Post</Modal.Header>
+            <Modal.Content>
+              <NewPostForm />
+            </Modal.Content>
+          </Modal>
           <Button.Group>
             <Button>
               <Image

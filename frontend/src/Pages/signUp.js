@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
-import BottomBar from "../Fragments/BottomBar";
-import SignUpForm from "../Fragments/SignUpForm";
+import BottomBar from "../Component/Fragments/BottomBar";
+import SignUpForm from "../Component/Fragments/SignUpForm";
 
 const signUp = () => (
   <Fragment>

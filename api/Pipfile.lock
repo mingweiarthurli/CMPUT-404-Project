@@ -1,11 +1,15 @@
 {
     "_meta": {
         "hash": {
+<<<<<<< HEAD
             "sha256": "d81227b86f483a2685596fa7b68915eb783b68b2d50de57ef54fbe05e0466401"
+=======
+            "sha256": "2524dad41e13a0dd4c342c8eb21bbb98936a0e436f738bde196b3a0ca3d2897f"
+>>>>>>> 9ca2a85ee680bc3685c187693e25e503ec0fc463
         },
         "pipfile-spec": 6,
         "requires": {
-            "python_version": "3.8"
+            "python_version": "3.6"
         },
         "sources": [
             {
@@ -18,10 +22,10 @@
     "default": {
         "asgiref": {
             "hashes": [
-                "sha256:7e06d934a7718bf3975acbf87780ba678957b87c7adc056f13b6215d610695a0",
-                "sha256:ea448f92fc35a0ef4b1508f53a04c4670255a3f33d22a81c8fc9c872036adbe5"
+                "sha256:3e4192eaec0758b99722f0b0666d5fbfaa713054d92e8de5b58ba84ec5ce696f",
+                "sha256:c8f49dd3b42edcc51d09dd2eea8a92b3cfc987ff7e6486be734b4d0cbfd5d315"
             ],
-            "version": "==3.2.3"
+            "version": "==3.2.5"
         },
         "cffi": {
             "hashes": [
@@ -89,6 +93,14 @@
             ],
             "index": "pypi",
             "version": "==3.0.3"
+        },
+        "django-widget-tweaks": {
+            "hashes": [
+                "sha256:a4ab4877744238e493c162a1bde2ebcae499d338e45072ebf5569c0664644bf9",
+                "sha256:bb81ca73ff17080192801c9bf3abba3b70d44ea0f1fcfd57778edb75f387c82e"
+            ],
+            "index": "pypi",
+            "version": "==1.4.6"
         },
         "djangorestframework": {
             "hashes": [

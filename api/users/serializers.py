@@ -4,6 +4,7 @@ from .models import Author, Profile
 class AuthorSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Author
+<<<<<<< HEAD
         # Note: id, url and host are not modifiable by authors themselves
         fields = ('id', 'url', 'displayName')
 
@@ -61,3 +62,9 @@ class SigninSerializer(serializers.Serializer):
             'token': jwt_token
         }
 '''
+=======
+        #Note: id, url and host are not modifiable by authors themselves
+        #fields = ['id', 'url', 'host', 'displayName', 'github', 'a_email', 'a_firstname', 'a_lastname', 'a_description', 'a_birthdate']
+        #read_only_fields = ['id', 'url', 'approved']
+        fields = ['id', 'approved', 'displayName', 'a_firstname', 'a_lastname']
+>>>>>>> 9ca2a85ee680bc3685c187693e25e503ec0fc463
