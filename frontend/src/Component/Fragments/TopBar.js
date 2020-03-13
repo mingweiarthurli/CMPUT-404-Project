@@ -1,7 +1,8 @@
 import React, { Fragment, useState } from "react";
 import AvatarSelector from "./AvatarSelector";
+import ImgUpload from "./ImgUpload";
 import NewPostForm from "../Fragments/NewPostForm";
-import { Label, Menu, Image, Grid, Button, Modal } from "semantic-ui-react";
+import { Label, Menu, Image, Button, Modal } from "semantic-ui-react";
 
 const TopBar = () => {
   const [activeItem, setActiveItem] = useState("Followers");
@@ -18,7 +19,6 @@ const TopBar = () => {
     } else {
       setVisability(true);
     }
-    console.log(visability);
   };
   return (
     <Fragment>
@@ -59,7 +59,7 @@ const TopBar = () => {
               onClick={e => handleChange(e, "Friends")}
             >
               Friends
-              <Label>y</Label>
+              <Label color="teal">y</Label>
             </Menu.Item>
           }
         >
@@ -77,12 +77,12 @@ const TopBar = () => {
               active={activeItem === "Notifications"}
               onClick={e => handleChange(e, "Notifications")}
             >
-              Notifications
-              <Label>z</Label>
+              Out-Going Requests
+              <Label color="teal">z</Label>
             </Menu.Item>
           }
         >
-          <Modal.Header>Requests Notifications</Modal.Header>
+          <Modal.Header>Out Going Requests</Modal.Header>
           <Modal.Content>
             <Modal.Description>
               <p>Notifications</p>
@@ -90,6 +90,19 @@ const TopBar = () => {
           </Modal.Content>
         </Modal>
         <Menu.Menu position="right">
+          <Modal
+            trigger={
+              <Menu.Item name="AddPhoto">
+                Add Photo
+                <Label>*</Label>
+              </Menu.Item>
+            }
+          >
+            <Modal.Header>Upload Your Photo</Modal.Header>
+            <Modal.Content>
+              <ImgUpload />
+            </Modal.Content>
+          </Modal>
           <Modal
             trigger={
               <Menu.Item name="NewPosts">
@@ -104,9 +117,8 @@ const TopBar = () => {
             </Modal.Content>
           </Modal>
           <Button.Group>
-            <Button>
+            <Button onClick={e => handleImageClick(e)}>
               <Image
-                onClick={e => handleImageClick(e)}
                 avatar
                 size="tiny"
                 src="https://firebasestorage.googleapis.com/v0/b/book-buddies-d4ba1.appspot.com/o/author.png?alt=media&token=84d333c4-f58c-4223-a454-d94a9d6a4b0f"

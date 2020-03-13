@@ -44,6 +44,9 @@ const SplitContainer = () => {
       <Grid column={2} divided>
         <Grid.Row>
           <Grid.Column width={3}>
+            <List.Header>
+              <strong>Available Authors</strong>
+            </List.Header>
             {authorError && (
               <List.Item>
                 <List.Content>
@@ -80,6 +83,9 @@ const SplitContainer = () => {
             )}
           </Grid.Column>
           <Grid.Column width={13}>
+            <List.Header>
+              <strong>Posts I Can See</strong>
+            </List.Header>
             {postError && (
               <List.Item>
                 <List.Content>

@@ -2,14 +2,19 @@ import React from "react";
 import { Dropdown } from "semantic-ui-react";
 const avatarOptions = [
   {
-    key: "",
-    text: "",
-    icon: ""
+    key: "myPosts",
+    text: "My Channel",
+    icon: "address book outline"
   },
   {
     key: "editProfile",
     text: "Edit Profile",
     icon: "edit"
+  },
+  {
+    key: "gitActivities",
+    text: "Git Activities",
+    icon: "github"
   },
   {
     key: "signOut",
@@ -19,7 +24,7 @@ const avatarOptions = [
 ];
 
 const AvatarSelector = () => (
-  <Dropdown floating placeholder="" options={avatarOptions} />
+  <Dropdown inline placeholder="" options={avatarOptions} />
 );
 
 export default AvatarSelector;

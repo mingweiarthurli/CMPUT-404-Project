@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import BottomBar from "../Component/Fragments/BottomBar";
 import TopBar from "../Component/Fragments/TopBar";
-import SplitContainer from "../Layouts/SpiltContainer";
+import SplitContainer from "../Component/Layouts/SpiltContainer";
 
 const home = () => (
   <Fragment>

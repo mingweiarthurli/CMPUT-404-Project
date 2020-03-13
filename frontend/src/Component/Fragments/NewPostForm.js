@@ -53,26 +53,35 @@ const SignInForm = () => {
   const [ready, setReady] = useState(false);
   const [dataSet, setDataSet] = useState({
     title: "",
-    categories: "",
+    category: "",
     description: "",
+    contentType: "",
     content: "",
     origin: "",
     source: "",
     author: "",
+    visibility: "",
     error: "",
     loading: false,
     redirecting: false
   });
-  const [contentType, setContentType] = useState("");
-  const value = contentType;
-  const handleChange = (e, { value }) => {
-    setContentType(value);
-  };
-  const handleSubmit = () => {
+  const handleSubmit = e => {
+    e.preventDefault();
     setReady(true);
-    console.log(ready);
+    console.log(dataSet);
   };
-
+  const handleInput = name => event => {
+    //simply sets the states using input value as user types
+    setDataSet({ ...dataSet, [name]: event.target.value });
+  };
+  var contentSelect = dataSet.contentType;
+  const handleTypeSelect = (e, { value }) => {
+    setDataSet({ ...dataSet, contentType: value });
+  };
+  var visSelect = dataSet.visibility;
+  const handleVisibilitySelect = (e, { value }) => {
+    setDataSet({ ...dataSet, visibility: value });
+  };
   return (
     <Container>
       <Grid.Row>
@@ -83,6 +92,7 @@ const SignInForm = () => {
                 required
                 id="post-title"
                 control={Input}
+                onChange={handleInput("title")}
                 label="Title"
                 placeholder="Title"
               />
@@ -91,6 +101,7 @@ const SignInForm = () => {
                   required
                   id="post-category"
                   control={Input}
+                  onChange={handleInput("category")}
                   label="Category"
                   placeholder="Category"
                 />
@@ -99,6 +110,9 @@ const SignInForm = () => {
                   id="post-contentType"
                   control={Select}
                   options={typeOptions}
+                  onChange={handleTypeSelect}
+                  selection
+                  value={contentSelect}
                   label="Content Type"
                   placeholder="Content Type"
                 />
@@ -107,6 +121,7 @@ const SignInForm = () => {
             <Form.Field
               id="post-description"
               control={TextArea}
+              onChange={handleInput("description")}
               label="Description"
               placeholder="Description"
               style={{ maxHeight: "60px" }}
@@ -117,12 +132,14 @@ const SignInForm = () => {
               control={TextArea}
               label="Content"
               placeholder="Content"
+              onChange={handleInput("content")}
               style={{ minHeight: "180px" }}
             />
             <Form.Group widths="equal">
               <Form.Field
                 id="post-source"
                 control={Input}
+                onChange={handleInput("source")}
                 label="Source"
                 placeholder="Source"
               />
@@ -130,6 +147,7 @@ const SignInForm = () => {
                 id="post-origin"
                 control={Input}
                 label="Origin"
+                onChange={handleInput("origin")}
                 placeholder="Origin"
               />
             </Form.Group>
@@ -139,9 +157,19 @@ const SignInForm = () => {
                 id="post-visibility"
                 control={Select}
                 options={visabilityOptions}
+                onChange={handleVisibilitySelect}
+                selection
+                value={visSelect}
                 label="Visible To"
               />
-              <Button color="blue" fluid size="small" onClick={handleSubmit}>
+              <Button
+                color="blue"
+                fluid
+                size="small"
+                onClick={e => {
+                  handleSubmit(e);
+                }}
+              >
                 OK
               </Button>
             </Form.Group>

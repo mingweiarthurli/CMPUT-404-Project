@@ -13,7 +13,7 @@ export default () => (
         <br />
       </Grid.Row>
       <Header as="h2" textAlign="center">
-        About Hindle's World
+        About Hindle's Wonderland
       </Header>
       <Grid divided inverted stackable>
         <Grid.Column width={3}></Grid.Column>
@@ -43,7 +43,10 @@ export default () => (
         </Grid.Column>
         <Grid.Column width={4}>
           <Header inverted as="h4" content="An UAlberta-Based Company" />
-          <p>Proudly Designed and Developed by UAlberta CS Students</p>
+          <p>
+            Proudly Designed and Developed by UAlberta CS Students. Made with
+            Uttermost Efforts and Dedication for Professor Hindle.
+          </p>
         </Grid.Column>
         <Grid.Column width={3}></Grid.Column>
       </Grid>
