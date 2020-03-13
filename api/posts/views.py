@@ -20,7 +20,6 @@ def home(request):
 @login_required
 def new(request):
     #author = Author.objects.first() #get logged in user later
-
     if request.method == 'POST':
         form = NewPostForm(request.POST)
         if form.is_valid():
