@@ -12,8 +12,7 @@ Installation Instructions:
     -uses djangorestframework
     -uses django-widget-tweaks
 
-------------------------------------------------------------------------------------------------------
-API documentation
+## API documentation
 
 hostname = localhost
 port= 8000
@@ -46,3 +45,8 @@ Api call to service/api/followers (incomplete)
 Api call to service/api/friendRequests (incomplete)
   - GET: returns a list of all freiendRequest relationships
   - POST: allows a new friendRequest relationship to be added to the database
+
+## UI Mockup
+
+See the `UI_mockup.fig` under the root directory.
+[Online vewing](https://www.figma.com/file/sKnTrhQ3f2uaiexQ0A8OSJ/CMPUT-404-Project?node-id=6%3A272)
