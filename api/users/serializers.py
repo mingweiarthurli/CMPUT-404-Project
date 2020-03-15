@@ -33,6 +33,8 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         profile = instance.profile
 
         instance.username = validated_data.get('username', instance.username)
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.save()
 
         profile.user_type = profile_data.get('user_type', profile.user_type)
