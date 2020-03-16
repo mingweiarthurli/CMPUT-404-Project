@@ -92,7 +92,7 @@
 - [ ] Make a presentation about your blog
 - [ ] Follow the guidelines in the example-article.json for the
      URLs and services
-- [ ] friend querying via POSTs to <http://service/friends/userid>
+- [x] friend querying via POSTs to <http://service/friends/userid>
 - [ ] friend2friend querying via GETs to <http://service/author/><userid>/friends/<userid>
 - [ ] implement author profiles via <http://service/author/userid>
 - [ ] Enforce some authentication

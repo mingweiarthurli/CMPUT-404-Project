@@ -45,7 +45,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include([
         path('', include('users.urls')),
+        path('', include('friends.urls'))
         # path('', include('posts.urls')),
-        # path('', include('friendships.urls'))
     ])),
 ]
