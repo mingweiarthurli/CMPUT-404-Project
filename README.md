@@ -1,14 +1,22 @@
 # CMPUT-404-Project
 
-Project repo for CMPUT 404
+## Server Code
 
-cd into api/
-pipenv install
-pipenv shell
+All server codes are under `/api`. Run the following shell command to start the server:
+
+```console
+cd api
 python manage.py migrate
+python manage.py createsuperuser
 python manage.py runserver
+```
 
-in your browser:
+### API documentation
 
-1. localhost:8000/api/users, go to the only url in that JSON. Insert, Delete....
-2. as for friendship and posts apis, there are minor breakages, still working to fix them...
+After running the server, you can check out the API documentation at `http://localhost:8000/swagger/` or `http://localhost:8000/redoc/` depending on what kind of documentation UI you prefer.
+
+## UI Mockup
+
+See the `UI_mockup.fig` under the root directory.
+
+[Online vewing](https://www.figma.com/file/sKnTrhQ3f2uaiexQ0A8OSJ/CMPUT-404-Project?node-id=6%3A272)
