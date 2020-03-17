@@ -2,50 +2,67 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from friends.models import Friend
 
-class FriendReadOnlySerializer(serializers.HyperlinkedModelSerializer):
+class FriendSerializer(serializers.HyperlinkedModelSerializer):
+    '''
+    This serializer should only be used for actions taken by the internal program of the server.
+    Do NOT pass the user's data DIRECTLY into this serializer, since this serializer has neither 
+    read_only_fields nor any advanced validator.
+    '''
     class Meta:
         model = Friend
-        fields = ('id', 'receiver', 'requester', 'rec_follow_req', 'req_follow_rec', 'not_read')
-        read_only_fields = ('receiver', 'requester', 'rec_follow_req', 'req_follow_rec', 'not_read')
-
-class FriendReceiverSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Friend
-        fields = ('id', 'receiver', 'requester', 'rec_follow_req', 'req_follow_rec', 'not_read')
-        read_only_fields = ('receiver', 'receiver', 'req_follow_rec')
-
-    #     validators = [
-    #         UniqueTogetherValidator(
-    #             queryset=Friend.objects.all(),
-    #             fields=['receiver', 'requester']
-    #         )
-    #     ]
-
-    # def validate(self, data):
-    #     """
-    #     enforce receiver field and requester field have different values
-    #     """
-    #     if data['receiver'] == data['requester']:
-    #         raise serializers.ValidationError("receiver and requester should not be same")
-    #     return data
-
-class FriendRequesterSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Friend
-        fields = ('id', 'receiver', 'requester', 'rec_follow_req', 'req_follow_rec', 'not_read')
-        read_only_fields = ('rec_follow_req', 'not_read')
+        fields = ('followee', 'follower', 'mutual', 'not_read')
 
         validators = [
             UniqueTogetherValidator(
                 queryset=Friend.objects.all(),
-                fields=['receiver', 'requester']
+                fields=['followee', 'follower']
             )
         ]
 
     def validate(self, data):
         """
-        enforce receiver field and requester field have different values
+        If "followee" and "follower" fields are provided (may not be provided if action is update), 
+        enforce followee field and follower field have different values.
         """
-        if data['receiver'] == data['requester']:
-            raise serializers.ValidationError("receiver and requester should not be same")
+        if 'followee' in data.keys() and 'follower' in data.keys() and data['followee'] == data['follower']:
+            raise serializers.ValidationError("followee and follower should not be same")
+        return data
+
+    # def create(self, validated_data):
+    #     print(validated_data)
+    #     return Friend(**validated_data)
+
+class FriendReadOnlySerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Friend
+        # fields = ('id', 'followee', 'follower', 'rec_follow_req', 'req_follow_rec', 'not_read')
+        # read_only_fields = ('followee', 'follower', 'rec_follow_req', 'req_follow_rec', 'not_read')
+        fields = ('id', 'followee', 'follower', 'mutual', 'not_read')
+        read_only_fields = ('followee', 'follower', 'mutual', 'not_read')
+
+class FriendfollowerSerializer(serializers.HyperlinkedModelSerializer):
+    '''
+    This serializer should only be used to create a new friendship event by the follower.
+    Do NOT use this serializer for update.
+    '''
+    class Meta:
+        model = Friend
+        # fields = ('id', 'followee', 'follower', 'rec_follow_req', 'req_follow_rec', 'not_read')
+        # read_only_fields = ('rec_follow_req', 'not_read')
+        fields = ('id', 'followee', 'follower', 'mutual', 'not_read')
+        read_only_fields = ('mutual', 'not_read')
+
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Friend.objects.all(),
+                fields=['followee', 'follower']
+            )
+        ]
+
+    def validate(self, data):
+        """
+        enforce followee field and follower field have different values
+        """
+        if data['followee'] == data['follower']:
+            raise serializers.ValidationError("followee and follower should not be same")
         return data

@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls import url
-from rest_framework import routers
+# from rest_framework import routers
 
 # drf-yasg - Yet another Swagger generator
 from rest_framework import permissions
@@ -36,7 +36,7 @@ schema_view = get_schema_view(
    permission_classes=(permissions.AllowAny,),
 )
 
-router = routers.DefaultRouter()
+# router = routers.DefaultRouter()
 
 urlpatterns = [
     url(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
