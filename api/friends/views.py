@@ -1,6 +1,4 @@
 from django.shortcuts import render
-
-# Create your views here.
 from rest_framework import viewsets, generics, mixins
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -18,7 +16,6 @@ class FriendView(mixins.CreateModelMixin,
                  mixins.DestroyModelMixin,
                  mixins.ListModelMixin,
                  viewsets.GenericViewSet):
-# class FriendView(viewsets.ModelViewSet):
     '''
     list:
         Return all friends of all users, ordered by friendship event ID.

@@ -10,7 +10,7 @@ class FriendSerializer(serializers.HyperlinkedModelSerializer):
     '''
     class Meta:
         model = Friend
-        fields = ('followee', 'follower', 'mutual', 'not_read')
+        fields = ('id', 'followee', 'follower', 'mutual', 'not_read')
 
         validators = [
             UniqueTogetherValidator(
@@ -35,8 +35,6 @@ class FriendSerializer(serializers.HyperlinkedModelSerializer):
 class FriendReadOnlySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Friend
-        # fields = ('id', 'followee', 'follower', 'rec_follow_req', 'req_follow_rec', 'not_read')
-        # read_only_fields = ('followee', 'follower', 'rec_follow_req', 'req_follow_rec', 'not_read')
         fields = ('id', 'followee', 'follower', 'mutual', 'not_read')
         read_only_fields = ('followee', 'follower', 'mutual', 'not_read')
 
@@ -47,8 +45,6 @@ class FriendfollowerSerializer(serializers.HyperlinkedModelSerializer):
     '''
     class Meta:
         model = Friend
-        # fields = ('id', 'followee', 'follower', 'rec_follow_req', 'req_follow_rec', 'not_read')
-        # read_only_fields = ('rec_follow_req', 'not_read')
         fields = ('id', 'followee', 'follower', 'mutual', 'not_read')
         read_only_fields = ('mutual', 'not_read')
 
