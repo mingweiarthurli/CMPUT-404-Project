@@ -8,6 +8,7 @@ All server codes are under `/api`. Run the following shell command to start the 
 cd api
 pipenv install
 pipenv shell
+python manage.py makemigrations
 python manage.py migrate
 python manage.py createsuperuser
 python manage.py runserver
