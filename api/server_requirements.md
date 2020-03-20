@@ -2,9 +2,9 @@
 
 ** User Stories
 
-- [ ] As an author I want to make posts.
-- [ ] As an author I want to edit posts.
-- [ ] As an author, posts I create can link to images.
+- [x] As an author I want to make posts.
+- [x] As an author I want to edit posts.
+- [x] As an author, posts I create can link to images.
 - [ ] As a server admin, images can be hosted on my server.
 - [ ] As an author, posts I create be private to me
 - [ ] As an author, posts I create be private to another author
