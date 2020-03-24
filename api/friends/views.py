@@ -76,9 +76,8 @@ class FriendView(mixins.CreateModelMixin,
 
 class FriendRequestRejectView(APIView):
     '''
-    put:
-        Reject the specified friend request.
-        Update the "mutual" field of the friendship event with the specified ID to False.
+    Reject the specified friend request.
+    Update the "mutual" field of the friendship event with the specified ID to False.
     '''
     def get_object(self, pk):
         try:
@@ -121,8 +120,7 @@ class FriendRequestAcceptView(APIView):
 
 class UserFriendListView(generics.ListAPIView):
     '''
-    get_queryset:
-        Return all friends of specified user_id.
+    Return all friends of specified user_id.
     '''
 
     # see more: https://www.django-rest-framework.org/api-guide/filtering/#filtering-against-the-url
@@ -134,8 +132,7 @@ class UserFriendListView(generics.ListAPIView):
 
 class UserFollowerListView(generics.ListAPIView):
     '''
-    get_queryset:
-        Return all followers of specified user_id.
+    Return all followers of specified user_id.
     '''
 
     # see more: https://www.django-rest-framework.org/api-guide/filtering/#filtering-against-the-url
@@ -147,8 +144,7 @@ class UserFollowerListView(generics.ListAPIView):
 
 class UserFriendRequestView(generics.ListAPIView):
     '''
-    get_queryset:
-        Return all friend requests of specified user_id.
+    Return all friend requests of specified user_id.
     '''
 
     # see more: https://www.django-rest-framework.org/api-guide/filtering/#filtering-against-the-url
