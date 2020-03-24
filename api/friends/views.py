@@ -29,10 +29,10 @@ class FriendRequestView(mixins.CreateModelMixin,
         Update the "mutual" field of the follower's friend requests to False.
 
     update:
-        Do NOT use this API in the frontend.
-        This API is only used for developing and testing.
-        This API will be DEPRECATED!
-        Update a friend requests.
+        !! Do NOT use this API in the frontend.
+        !! This API is only used for developing and testing.
+        !! This API will be DEPRECATED!
+        !! Update a friend requests.
     '''
 
     queryset = Friend.objects.all()
