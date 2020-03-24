@@ -6,8 +6,8 @@ from rest_framework.decorators import action
 from rest_framework import status
 from django.db.models import Q
 from django.http import Http404, HttpResponseBadRequest
-from friends.models import Friend
-from friends.serializers import FriendSerializer, FriendReadOnlySerializer, FriendfollowerSerializer
+from friends.models import Friend, FOAF
+from friends.serializers import FriendSerializer, FriendReadOnlySerializer, FriendfollowerSerializer, FOAFSerializer
 
 from rest_framework.reverse import reverse
 
@@ -104,15 +104,32 @@ class FriendRequestAcceptView(APIView):
     
     def put(self, request, pk=None):
         target = self.get_object(pk)
-        # if not target.not_read:
-        #     raise HttpResponseBadRequest
 
-        new_followee_url = reverse('user-detail', args=[target.follower.id], request=request)
-        new_follower_url = reverse('user-detail', args=[target.followee.id], request=request)
-        mutual_data = {"followee": new_followee_url, "follower": new_follower_url, "mutual": True, "not_read": False}
+        # add the follower to the user's (followee) friend list
+        follower_url = reverse('user-detail', args=[target.follower.id], request=request)
+        followee_url = reverse('user-detail', args=[target.followee.id], request=request)
+        mutual_data = {"followee": follower_url, "follower": followee_url, "mutual": True, "not_read": False}
         mutual_serializer = FriendSerializer(data=mutual_data)      # create a mutual following
-        if mutual_serializer.is_valid(raise_exception=True):      # have to call is_valid() before excution
+        if mutual_serializer.is_valid(raise_exception=True):        # have to call is_valid() before excution
             mutual_serializer.save()
+
+        # # add the follower's friends to the user's (followee) FOAF list
+        # follower_friends = Friend.objects.filter(Q(followee=target.follower.id) & Q(mutual=True))
+        # for follower_friend in follower_friends:
+        #     another_friend_url = reverse('user-detail', args=[follower_friend.follower.id], request=request)
+        #     FOAF_data = {"user": followee_url, "friend": follower_url, "another_friend": another_friend_url}
+        #     FOAF_serializer = FOAFSerializer(data=FOAF_data)
+        #     if FOAF_serializer.is_valid(raise_exception=True):      # have to call is_valid() before excution
+        #         FOAF_serializer.save()
+        
+        # # add the user's (followee) friends to the follower's FOAF list
+        # followee_friends = Friend.objects.filter(Q(followee=target.followee.id) & Q(mutual=True))
+        # for followee_friend in followee_friends:
+        #     another_friend_url = reverse('user-detail', args=[followee_friend.follower.id], request=request)
+        #     FOAF_data = {"user": follower_url, "friend": followee_url, "another_friend": another_friend_url}
+        #     FOAF_serializer = FOAFSerializer(data=FOAF_data)
+        #     if FOAF_serializer.is_valid(raise_exception=True):      # have to call is_valid() before excution
+        #         FOAF_serializer.save()
 
         serializer = FriendSerializer(target, data={"mutual": True, "not_read": False}, partial=True, context={'request': request})
         if serializer.is_valid(raise_exception=True):      # have to call is_valid() before excution
@@ -158,3 +175,29 @@ class UserFriendRequestView(generics.ListAPIView):
     def get_queryset(self):
         user_id = self.kwargs['user_id']
         return Friend.objects.filter(Q(followee=user_id) & Q(not_read=True))
+
+
+
+
+class FOAFViewSet(viewsets.ModelViewSet):
+    '''
+        retrieve:
+            Return a user instance.
+
+        list:
+            Return all users,ordered by ID.
+
+        create:
+            Create a new user.
+
+        delete:
+            Remove a existing user.
+
+        partial_update:
+            Update one or more fields on a existing user.
+
+        update:
+            Update a user.
+    '''
+    queryset = FOAF.objects.all()
+    serializer_class = FOAFSerializer

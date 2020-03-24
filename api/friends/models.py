@@ -17,3 +17,9 @@ class Friend(models.Model):
     follower = models.ForeignKey(User, on_delete = models.CASCADE, default=1, related_name='follower')
     mutual = models.BooleanField(default=False)             # wheater the followee followed back
     not_read = models.BooleanField(default=True)            # wheater the followee read this request
+
+class FOAF(models.Model):
+    # id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete = models.CASCADE, default=1, related_name='FOAF_user')
+    friend = models.ForeignKey(User, on_delete = models.CASCADE, default=1, related_name='_FOAF_friend')
+    another_friend = models.ForeignKey(User, on_delete = models.CASCADE, default=1, related_name='FOAF_another_friend')

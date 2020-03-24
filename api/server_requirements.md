@@ -95,7 +95,7 @@
 - [x] friend querying via POSTs to <http://service/friends/userid>
 - [ ] friend2friend querying via GETs to <http://service/author/><userid>/friends/<userid>
 - [ ] implement author profiles via <http://service/author/userid>
-- [ ] Enforce some authentication
+- [x] Enforce some authentication
   - Consider HTTP Basic Auth
 - [ ] implement a restful API for <http://service/posts/postid>
   - a PUT should insert/update a post

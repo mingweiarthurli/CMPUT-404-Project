@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
-from friends.models import Friend
+from friends.models import Friend, FOAF
 
 class FriendSerializer(serializers.HyperlinkedModelSerializer):
     '''
@@ -61,4 +61,26 @@ class FriendfollowerSerializer(serializers.HyperlinkedModelSerializer):
         """
         if data['followee'] == data['follower']:
             raise serializers.ValidationError("followee and follower should not be same")
+        return data
+
+class FOAFSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = FOAF
+        fields = ('id', 'user', 'friend', 'another_friend')
+
+        validators = [
+            UniqueTogetherValidator(
+                queryset=Friend.objects.all(),
+                fields=['user', 'friend', 'another_friend']
+            )
+        ]
+
+    def validate(self, data):
+        """
+        enforce followee field and follower field have different values
+        """
+        if data['user'] == data['friend']:
+            raise serializers.ValidationError("user and friend should not be same")
+        elif data['friend'] == data['another_friend']:
+            raise serializers.ValidationError("friend and another_friend should not be same")
         return data

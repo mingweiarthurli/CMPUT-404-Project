@@ -1,8 +1,9 @@
 from django.conf.urls import url, include
 from rest_framework import routers
-from friends.views import FriendView, FriendRequestRejectView, FriendRequestAcceptView, UserFriendListView, UserFollowerListView, UserFriendRequestView
+from friends.views import FriendView, FriendRequestRejectView, FriendRequestAcceptView, UserFriendListView, UserFollowerListView, UserFriendRequestView, FOAFViewSet
 
 router = routers.DefaultRouter()
+router.register(r'FOAF', FOAFViewSet, basename='FOAF')
 
 urlpatterns = [
     url(r'^', include(router.urls)),
