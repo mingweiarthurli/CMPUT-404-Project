@@ -6,14 +6,14 @@
 - [x] As an author I want to edit posts.
 - [x] As an author, posts I create can link to images.
 - [ ] As a server admin, images can be hosted on my server.
-- [ ] As an author, posts I create be private to me
-- [ ] As an author, posts I create be private to another author
-- [ ] As an author, posts I create be private to my friends
-- [ ] As an author, posts I create be private to friends of friends
+- [x] As an author, posts I create be private to me
+- [x] As an author, posts I create be private to another author
+- [x] As an author, posts I create be private to my friends
+- [x] As an author, posts I create be private to friends of friends
 - [ ] As an author, posts I create be private to only friends on my host
-- [ ] As an author, posts I create can be public
-- [ ] As an author, posts I make can be in simple plain text
-- [ ] As an author, posts I make can be in markdown (commonMark is good)
+- [x] As an author, posts I create can be public
+- [x] As an author, posts I make can be in simple plain text
+- [x] As an author, posts I make can be in markdown (commonMark is good)
 - [ ] As an author, I want a consistent identity per server
 - [x] As a server admin, I want to host multiple authors on my server
 - [ ] As a server admin, I want to share or not share posts with users
@@ -97,7 +97,7 @@
 - [ ] implement author profiles via <http://service/author/userid>
 - [x] Enforce some authentication
   - Consider HTTP Basic Auth
-- [ ] implement a restful API for <http://service/posts/postid>
+- [x] implement a restful API for <http://service/posts/postid>
   - a PUT should insert/update a post
   - a POST should insert the post
   - a GET with a postfixed "postid" should return the post
@@ -105,10 +105,10 @@
 - [ ] FOAF verification involves the 3 hosts of the 3 friends
      A->B->C assuming A B C reside on different hosts.
 - [ ] Allow users to accept or reject friend requests
-- [ ] friend requests can be made by POSTing a friend request to
+- [x] friend requests can be made by POSTing a friend request to
      <http://service/friendrequest>
-- [ ] <http://service/author/posts> (posts that are visible to the currently authenticated user)
-- [ ] <http://service/author/{AUTHOR_ID}/posts> (all posts made by {AUTHOR_ID} visible to the currently authenticated user)
+- [x] <http://service/author/posts> (posts that are visible to the currently authenticated user)
+- [x] <http://service/author/{AUTHOR_ID}/posts> (all posts made by {AUTHOR_ID} visible to the currently authenticated user)
 - [ ] Images get the same protection that posts get as they are POSTS
 - [ ] example-article.json is adhered to.
 ** Take-aways

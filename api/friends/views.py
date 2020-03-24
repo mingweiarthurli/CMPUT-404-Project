@@ -11,28 +11,30 @@ from friends.serializers import FriendSerializer, FriendReadOnlySerializer, Frie
 
 from rest_framework.reverse import reverse
 
-class FriendView(mixins.CreateModelMixin, 
-                 mixins.UpdateModelMixin,
-                 mixins.DestroyModelMixin,
-                 mixins.ListModelMixin,
-                 viewsets.GenericViewSet):
+class FriendRequestView(mixins.CreateModelMixin, 
+                        mixins.UpdateModelMixin,
+                        mixins.DestroyModelMixin,
+                        mixins.ListModelMixin,
+                        viewsets.GenericViewSet):
     '''
     list:
-        Return all friends of all users, ordered by friendship event ID.
+        Return all friend requests of all users, ordered by friend request ID.
 
     create:
-        Create a friendship event between two users (follow + send friend request).
+        Create a friend requests between two users (follow and send friend request).
         Status code "400 Bad Request" will be returned, if user field and friend field are same.
 
     delete:
-        Remove a existing friendship event by friendship event ID (unfollow).
+        Remove a existing friend requests by friend requests ID (unfollow).
+        Update the "mutual" field of the follower's friend requests to False.
 
     update:
         Do NOT use this API in the frontend.
         This API is only used for developing and testing.
         This API will be DEPRECATED!
-        Update a friendship event.
+        Update a friend requests.
     '''
+
     queryset = Friend.objects.all()
     # serializer_class = FriendReadOnlySerializer
 
@@ -77,8 +79,9 @@ class FriendView(mixins.CreateModelMixin,
 class FriendRequestRejectView(APIView):
     '''
     Reject the specified friend request.
-    Update the "mutual" field of the friendship event with the specified ID to False.
+    Update the "not_read" field of the friend requests with the specified ID to False.
     '''
+
     def get_object(self, pk):
         try:
             return Friend.objects.get(id=pk)
@@ -95,6 +98,12 @@ class FriendRequestRejectView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class FriendRequestAcceptView(APIView):
+    '''
+    Accept the specified friend request.
+    Update the "mutual" field of the friend requests with the specified ID to True.
+    Update the "not_read" field of the friend requests with the specified ID to False.
+    '''
+
     def get_object(self, pk):
         try:
             return Friend.objects.get(id=pk)
