@@ -72,17 +72,53 @@ class PostViewSet(viewsets.ModelViewSet):
         Permission:
             Any users: read only permission with posts shared with them
 
+        text_type field choices:
+            1, plaintext
+            2, markdown
+
+        visibility field choices:
+            1, public
+            2, private
+            3, friends
+            4, friends and friends of friends
+            5, another author
+            6, friends on the same host
+
     list:
         Return all listed public posts.
 
         Permission:
             Any users: read only permission with posts shared with them
 
+        text_type field choices:
+            1, plaintext
+            2, markdown
+
+        visibility field choices:
+            1, public
+            2, private
+            3, friends
+            4, friends and friends of friends
+            5, another author
+            6, friends on the same host
+
     create:
         Create a new post.
 
         Permission:
             Any users: write permission
+
+        text_type field choices:
+            1, plaintext
+            2, markdown
+
+        visibility field choices:
+            1, public
+            2, private
+            3, friends
+            4, friends and friends of friends
+            5, another author
+            6, friends on the same host
 
     delete:
         Remove a existing post.
