@@ -6,8 +6,8 @@ from rest_framework.decorators import action
 from rest_framework import status
 from django.db.models import Q
 from django.http import Http404, HttpResponseBadRequest
-from friends.models import Friend, FOAF
-from friends.serializers import FriendSerializer, FriendReadOnlySerializer, FriendfollowerSerializer, FOAFSerializer
+from friends.models import Friend
+from friends.serializers import FriendSerializer, FriendReadOnlySerializer, FriendfollowerSerializer
 
 from rest_framework.reverse import reverse
 
@@ -114,12 +114,23 @@ class FriendRequestAcceptView(APIView):
             mutual_serializer.save()
 
         # # add the follower's friends to the user's (followee) FOAF list
+        # print("check1")
         # follower_friends = Friend.objects.filter(Q(followee=target.follower.id) & Q(mutual=True))
+        # print("check2")
+        # print(follower_friends)
         # for follower_friend in follower_friends:
+        #     print("check3")
         #     another_friend_url = reverse('user-detail', args=[follower_friend.follower.id], request=request)
+        #     print("check4")
+        #     print(followee_url)
+        #     print(follower_url)
+        #     print(another_friend_url)
         #     FOAF_data = {"user": followee_url, "friend": follower_url, "another_friend": another_friend_url}
+        #     print("check5")
         #     FOAF_serializer = FOAFSerializer(data=FOAF_data)
+        #     print("check6")
         #     if FOAF_serializer.is_valid(raise_exception=True):      # have to call is_valid() before excution
+        #         print("check7")
         #         FOAF_serializer.save()
         
         # # add the user's (followee) friends to the follower's FOAF list
@@ -179,25 +190,25 @@ class UserFriendRequestView(generics.ListAPIView):
 
 
 
-class FOAFViewSet(viewsets.ModelViewSet):
-    '''
-        retrieve:
-            Return a user instance.
+# class FOAFViewSet(viewsets.ModelViewSet):
+#     '''
+#         retrieve:
+#             Return a user instance.
 
-        list:
-            Return all users,ordered by ID.
+#         list:
+#             Return all users,ordered by ID.
 
-        create:
-            Create a new user.
+#         create:
+#             Create a new user.
 
-        delete:
-            Remove a existing user.
+#         delete:
+#             Remove a existing user.
 
-        partial_update:
-            Update one or more fields on a existing user.
+#         partial_update:
+#             Update one or more fields on a existing user.
 
-        update:
-            Update a user.
-    '''
-    queryset = FOAF.objects.all()
-    serializer_class = FOAFSerializer
+#         update:
+#             Update a user.
+#     '''
+#     queryset = FOAF.objects.all()
+#     serializer_class = FOAFSerializer
