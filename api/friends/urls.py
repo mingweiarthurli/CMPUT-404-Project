@@ -3,7 +3,6 @@ from rest_framework import routers
 from friends.views import FriendView, FriendRequestRejectView, FriendRequestAcceptView, UserFriendListView, UserFollowerListView, UserFriendRequestView
 
 router = routers.DefaultRouter()
-# router.register(r'FOAF', FOAFViewSet, basename='FOAF')
 
 urlpatterns = [
     url(r'^', include(router.urls)),
