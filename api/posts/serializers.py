@@ -1,6 +1,8 @@
 
 from rest_framework import serializers
 # from rest_framework.validators import UniqueTogetherValidator
+import json
+from django.db.models import Q, Count
 from posts.models import Post, Comment
 from users.serializers import AuthorInfoSerializer
 
@@ -13,13 +15,18 @@ class CommentSerializer(serializers.HyperlinkedModelSerializer):
         model = Comment
         fields = ('author', 'comment', 'contentType', 'published', 'id')
 
+class CommentEditSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ('post', 'author', 'comment', 'contentType', 'published', 'id')
+
 class PostSerializer(serializers.HyperlinkedModelSerializer):
     author = AuthorInfoSerializer(many=False, read_only=True)
     source = serializers.SerializerMethodField()
     origin = serializers.SerializerMethodField()
     count = serializers.SerializerMethodField()
-    # comments = serializers.SerializerMethodField()
-    comments = CommentSerializer(many=True, read_only=True)
+    comments = serializers.SerializerMethodField()
+    # comments = CommentSerializer(many=True, read_only=True)
 
     class Meta:
         model = Post
@@ -43,7 +50,8 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
             return obj.origin
 
     def get_count(self, obj):
-        return obj.post_comment.all().count()
+        return Comment.objects.filter(Q(post=obj.id)).count()
     
-    # def get_comments(self, obj):
-    #     return obj.post_comment.all()
+    def get_comments(self, obj):
+        queryset = Comment.objects.filter(Q(post=obj.id))
+        return CommentSerializer(queryset, many=True).data

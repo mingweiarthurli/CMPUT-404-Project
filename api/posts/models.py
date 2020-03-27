@@ -39,7 +39,8 @@ class Post(models.Model):
     unlisted = models.BooleanField(default=False)
 
 class Comment(models.Model):
-    post = models.ForeignKey(Post, on_delete = models.CASCADE, default=1, related_name="post_comment")
+    # post = models.ForeignKey(Post, on_delete = models.CASCADE, default=1, related_name="post_comment")
+    post = models.TextField(blank=False, default=1)
     author = author = models.ForeignKey(User, on_delete = models.CASCADE, default=1, related_name="comment_author")
     comment = models.TextField(blank=True, max_length=2000)
     contentType = models.TextField(choices=TEXT_TYPE_CHOICES, default='text/plain')
