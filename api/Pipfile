@@ -8,6 +8,8 @@ verify_ssl = true
 [packages]
 django = "==3.0.3"
 djangorestframework = "==3.11"
+django-rest-auth = "*"
+django-allauth = "*"
 django-cors-headers = "*"
 djangorestframework_simplejwt = "*"
 drf-yasg = "*"
