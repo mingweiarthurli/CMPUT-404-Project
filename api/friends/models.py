@@ -1,4 +1,5 @@
 from django.db import models
+import uuid
 from django.utils import timezone
 from users.models import User
 
@@ -12,8 +13,8 @@ class Friend(models.Model):
 
     For creating Friend instance and marking mutual field of the followee, it will be finished automatically by the view.
     '''
-    # id = models.AutoField(primary_key=True)
-    followee = models.ForeignKey(User, on_delete = models.CASCADE, default=1, related_name='friend_followee')
-    follower = models.ForeignKey(User, on_delete = models.CASCADE, default=1, related_name='friend_follower')
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    followee = models.ForeignKey(User, on_delete = models.CASCADE, related_name='friend_followee')
+    follower = models.ForeignKey(User, on_delete = models.CASCADE, related_name='friend_follower')
     mutual = models.BooleanField(default=False)             # wheater the followee followed back
     not_read = models.BooleanField(default=True)            # wheater the followee read this request
