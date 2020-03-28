@@ -13,7 +13,7 @@ class Friend(models.Model):
     For creating Friend instance and marking mutual field of the followee, it will be finished automatically by the view.
     '''
     # id = models.AutoField(primary_key=True)
-    followee = models.ForeignKey(User, on_delete = models.CASCADE, default=1, related_name='followee')
-    follower = models.ForeignKey(User, on_delete = models.CASCADE, default=1, related_name='follower')
+    followee = models.ForeignKey(User, on_delete = models.CASCADE, default=1, related_name='friend_followee')
+    follower = models.ForeignKey(User, on_delete = models.CASCADE, default=1, related_name='friend_follower')
     mutual = models.BooleanField(default=False)             # wheater the followee followed back
     not_read = models.BooleanField(default=True)            # wheater the followee read this request
