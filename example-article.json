@@ -189,17 +189,17 @@ This file specifies what posts look like:
 
 
 
-# a reponse if friends or not
-# ask a service GET http://service/author/<authorid>/friends/
-responds with:
-{
-	"query":"friends",
-	# Array of Author UUIDs
-	"authors":[
-		"http://host3/author/de305d54-75b4-431b-adb2-eb6b9e546013",
-		"http://host2/author/ae345d54-75b4-431b-adb2-fb6b9e547891"
-	]
-}
+// # a reponse if friends or not
+// # ask a service GET http://service/author/<authorid>/friends/
+// responds with:
+// {
+// 	"query":"friends",
+// 	# Array of Author UUIDs
+// 	"authors":[
+// 		"http://host3/author/de305d54-75b4-431b-adb2-eb6b9e546013",
+// 		"http://host2/author/ae345d54-75b4-431b-adb2-fb6b9e547891"
+// 	]
+// }
 
 # Ask if 2 authors are friends
 # GET http://service/author/<authorid>/friends/<authorid2>
@@ -220,36 +220,36 @@ responds with:
         "friends": true
 }
 
-# ask a service if anyone in the list is a friend
-# POST to http://service/author/<authorid>/friends
-{
-	"query":"friends",
-	"author":"<authorid>",
-	# Array of Author ids
-	"authors": [
-	    "http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
-		"http://127.0.0.1:5454/author/ae345d54-75b4-431b-adb2-fb6b9e547891",
-		"...",
-		"...",
-		"..."
-  	]
-}
+// # ask a service if anyone in the list is a friend
+// # POST to http://service/author/<authorid>/friends
+// {
+// 	"query":"friends",
+// 	"author":"<authorid>",
+// 	# Array of Author ids
+// 	"authors": [
+// 	    "http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
+// 		"http://127.0.0.1:5454/author/ae345d54-75b4-431b-adb2-fb6b9e547891",
+// 		"...",
+// 		"...",
+// 		"..."
+//   	]
+// }
 
-# reponds with
-{
-	"query":"friends",
- 	"author":"<authorid>", # where <authorid> is the full URL of the author in question
- 	# Array of Author ids who are friends
-	"authors": [
-	    "http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
-		"http://127.0.0.1:5454/author/ae345d54-75b4-431b-adb2-fb6b9e547891",
-		"..."
-  	]
-}
+// # reponds with
+// {
+// 	"query":"friends",
+//  	"author":"<authorid>", # where <authorid> is the full URL of the author in question
+//  	# Array of Author ids who are friends
+// 	"authors": [
+// 	    "http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
+// 		"http://127.0.0.1:5454/author/ae345d54-75b4-431b-adb2-fb6b9e547891",
+// 		"..."
+//   	]
+// }
 
-# This is needed for FOAF calls, it asks the other server to decide to send us a
-# post or not based on friends.
-# one of Greg's friends has to be be LARA's friend
+// # This is needed for FOAF calls, it asks the other server to decide to send us a
+// # post or not based on friends.
+// # one of Greg's friends has to be be LARA's friend
 
 # Here GREG tries to get a post from LARA that's marked as FOAF visibility
 # the server will query greg's server to ensure that he is friends with 7de and 11c
@@ -280,24 +280,24 @@ responds with:
 # then this returns with the generic GET http://service/posts/{POST_ID}
 
 
-# to make a friend request, POST to http://service/friendrequest
+// # to make a friend request, POST to http://service/friendrequest
 
-{
-	"query":"friendrequest",
-	"author": {
-		"id":"http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
-		"host":"http://127.0.0.1:5454/",
-		"displayName":"Greg Johnson"
-                "url":"http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
-	},
-	"friend": {
-		"id":"http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e637281",
-		"host":"http://127.0.0.1:5454/",
-		"displayName":"Lara Croft",
-                "url":"http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
+// {
+// 	"query":"friendrequest",
+// 	"author": {
+// 		"id":"http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
+// 		"host":"http://127.0.0.1:5454/",
+// 		"displayName":"Greg Johnson"
+//                 "url":"http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
+// 	},
+// 	"friend": {
+// 		"id":"http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e637281",
+// 		"host":"http://127.0.0.1:5454/",
+// 		"displayName":"Lara Croft",
+//                 "url":"http://127.0.0.1:5454/author/de305d54-75b4-431b-adb2-eb6b9e546013",
 
-	}
-}
+// 	}
+// }
 
 # to unfriend simply do it locally
 

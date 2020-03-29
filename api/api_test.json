@@ -37,7 +37,6 @@ POST /author/{user_id}/friends/
 {
 	"query":"friends",
 	"author":"https://cmput-404-project.herokuapp.com/author/77532446-1d81-4e78-a5f2-9a79b295c776",
-	# Array of Author ids
 	"authors": [
 	    "https://cmput-404-project.herokuapp.com/author/77532446-1d81-4e78-a5f2-9a79b295c776",
 		"https://cmput-404-project.herokuapp.com/author/898d4703-f173-4a40-a634-890c74a621c5",
