@@ -194,17 +194,17 @@ class CommentViewSet(viewsets.ModelViewSet):
     create:
         Create a new comment for the specified post.
 
-        Expected POST JSON formmat:
-        {
-            "comment": "string",
-            "contentType": "text/plain",
-        }
-
         Following fields will be generated automatically:
         post: post UUID that specified as post_id in URL 
         author: current user
         published: current time
         id: auto-generated UUID
+
+        Expected POST request body formmat:
+        {
+            "comment": "string",
+            "contentType": "text/plain",
+        }
 
     delete:
         Remove a existing post.

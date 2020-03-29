@@ -27,12 +27,13 @@ class FriendRequestView(mixins.CreateModelMixin,
         Return all friend requests of all users, ordered by friend request ID.
 
     create:
-        Create a friend requests between two users (follow and send friend request).\
-        
+        Create a friend requests between two users (follow and send friend request).
+
         If Succeed will return status code 200.
         Status code "400 Bad Request" will be returned, if user field and friend field are same.
 
-        Expected POST body example:
+        Expected POST request body example (author is follower, friend is followee):
+
         {
             "query":"friendrequest",
             "author": {
@@ -49,10 +50,10 @@ class FriendRequestView(mixins.CreateModelMixin,
 
             }
         }
-        Where author is follower, friend is followee.
 
     delete:
         Remove a existing friend requests by followee ID (unfollow).
+
         Update the "mutual" field of the follower's friend requests to False.
 
     update:
@@ -117,6 +118,7 @@ class FriendRequestView(mixins.CreateModelMixin,
 class FriendRequestRejectView(APIView):
     '''
     Reject the friend request of specified follower by follower ID.
+
     Update the "not_read" field of the friend requests with the specified ID to False.
 
     !! Using this action after login! Since this action will use the loged-in user's info as followee.
@@ -141,6 +143,7 @@ class FriendRequestRejectView(APIView):
 class FriendRequestAcceptView(APIView):
     '''
     Accept the friend request of specified follower by follower ID.
+
     Update the "mutual" field of the friend requests with the specified ID to True.
     Update the "not_read" field of the friend requests with the specified ID to False.
 
@@ -172,7 +175,33 @@ class FriendRequestAcceptView(APIView):
 
 class UserFriendListView(APIView):
     '''
-    Return all friends of specified user_id.
+    get:
+        Return all friends of specified user_id
+
+        Expected response body example:
+
+        {
+            "query": "friends",
+            "authors": [
+                "https://cmput-404-project.herokuapp.com/author/6fbb1f1f-d793-4e46-af23-776516890033",
+                "https://cmput-404-project.herokuapp.com/author/898d4703-f173-4a40-a634-890c74a621c5"
+            ]
+        }
+
+    post:
+        Check whether the authors in the list are friends of specified user.
+
+        Expected POST request body example:
+
+        {
+            "query":"friends",
+            "author":"https://cmput-404-project.herokuapp.com/author/77532446-1d81-4e78-a5f2-9a79b295c776",
+            "authors": [
+                "https://cmput-404-project.herokuapp.com/author/77532446-1d81-4e78-a5f2-9a79b295c776",
+                "https://cmput-404-project.herokuapp.com/author/898d4703-f173-4a40-a634-890c74a621c5",
+                "https://cmput-404-project.herokuapp.com/author/6fbb1f1f-d793-4e46-af23-776516890033"
+            ]
+        }
     '''
     def get(self, request, user_id):
         # user_id = self.kwargs['user_id']
@@ -184,13 +213,32 @@ class UserFriendListView(APIView):
         response = {"query": "friends", "authors": friend_list}
         return Response(dict_to_json(response))
 
+    def post(self, request, user_id):
+        # user_id = self.kwargs['user_id']
+        author_url = request.data['author']
+        friend_urls = request.data["authors"]
+        friend_list = []
+        for friend_url in friend_urls:
+            # parsed = re.findall(r"(https?://[-A-Za-z0-9+&@#%?=~_|!:,.;]+/)author/([-A-Za-z0-9]+)/?", friend_url, re.I)
+            # friend_id = parsed[0][1]
+            # friend_host = parsed[0][0]
+
+            # num_friend = Friend.objects.filter(Q(followee_id=user_id) & Q(follower_id=friend_id) & Q(follower_host=friend_host) & Q(mutual=True)).count()
+            num_friend = Friend.objects.filter(Q(followee_url=author_url) & Q(follower_url=friend_url) & Q(mutual=True)).count()
+            if num_friend > 0:
+                friend_list.append(friend_url)
+
+        response = {"query": "friends", "author": author_url, "authors": friend_list}
+        return Response(dict_to_json(response))
+
 class UserFriendCheckView(APIView):
     '''
     Check if two specified users are friends.
 
     If there is any user_id not exiting (or on the other host), the returned json may be with a empty authors list.
 
-    Expected response example:
+    Expected response body example:
+    ```
     {
         "query": "friends",
         "authors": [
@@ -199,6 +247,7 @@ class UserFriendCheckView(APIView):
         ],
         "friends": true
     }
+    ```
     '''
     def get(self, request, user_id1, user_id2):
         # user_id1 = self.kwargs['user_id1']
@@ -223,60 +272,57 @@ class UserFriendCheckView(APIView):
         response = {"query": "friends", "authors": friend_list, "friends": is_friend}
         return Response(dict_to_json(response))
 
-class QueryListFriendView(APIView):
-    '''
-    Check whether the authors in the list are friends of specified user.
 
-    Expected POST body example:
+class UserFollowerListView(APIView):
+    '''
+    Return the list of all followers (havn't been accepted/ rejected or the followee unfollowed them) of specified user_id.
+
+    Expected response body example:
+    ```
     {
-        "query":"friends",
-        "author":"https://cmput-404-project.herokuapp.com/author/77532446-1d81-4e78-a5f2-9a79b295c776",
-        # Array of Author ids
+        "query": "followers",
         "authors": [
+            "https://cmput-404-project.herokuapp.com/author/6fbb1f1f-d793-4e46-af23-776516890033",
             "https://cmput-404-project.herokuapp.com/author/77532446-1d81-4e78-a5f2-9a79b295c776",
-            "https://cmput-404-project.herokuapp.com/author/898d4703-f173-4a40-a634-890c74a621c5",
-            "https://cmput-404-project.herokuapp.com/author/6fbb1f1f-d793-4e46-af23-776516890033"
+            "https://cmput-404-project.herokuapp.com/author/898d4703-f173-4a40-a634-890c74a621c5"
         ]
     }
+    ```
     '''
-    def post(self, request, user_id):
+
+    def get(self, request, user_id):
         # user_id = self.kwargs['user_id']
-        author_url = request.data['author']
-        friend_urls = request.data["authors"]
-        friend_list = []
-        for friend_url in friend_urls:
-            # parsed = re.findall(r"(https?://[-A-Za-z0-9+&@#%?=~_|!:,.;]+/)author/([-A-Za-z0-9]+)/?", friend_url, re.I)
-            # friend_id = parsed[0][1]
-            # friend_host = parsed[0][0]
-
-            # num_friend = Friend.objects.filter(Q(followee_id=user_id) & Q(follower_id=friend_id) & Q(follower_host=friend_host) & Q(mutual=True)).count()
-            num_friend = Friend.objects.filter(Q(followee_url=author_url) & Q(follower_url=friend_url) & Q(mutual=True)).count()
-            if num_friend > 0:
-                friend_list.append(friend_url)
-
-        response = {"query": "friends", "author": author_url, "authors": friend_list}
+        followers = Friend.objects.filter(Q(followee_id=user_id) & Q(mutual=False))
+        follower_list = []
+        for follower in followers:
+            follower_list.append(follower.follower_url)
+        
+        response = {"query": "followers", "authors": follower_list}
         return Response(dict_to_json(response))
 
-# class UserFollowerListView(generics.ListAPIView):
-#     '''
-#     Return all followers of specified user_id.
-#     '''
+class UserFriendRequestView(APIView):
+    '''
+    Return the list all friend requests of specified user_id that haven't been accpeted / rejected.
 
-#     # see more: https://www.django-rest-framework.org/api-guide/filtering/#filtering-against-the-url
-#     serializer_class = FriendReadOnlySerializer
+    Expected response body example:
+    ```
+    {
+        "query": "followers",
+        "authors": [
+            "https://cmput-404-project.herokuapp.com/author/6fbb1f1f-d793-4e46-af23-776516890033",
+            "https://cmput-404-project.herokuapp.com/author/77532446-1d81-4e78-a5f2-9a79b295c776",
+            "https://cmput-404-project.herokuapp.com/author/898d4703-f173-4a40-a634-890c74a621c5"
+        ]
+    }
+    ```
+    '''
 
-#     def get_queryset(self):
-#         user_id = self.kwargs['user_id']
-#         return Friend.objects.filter(Q(followee=user_id) & Q(mutual=False))
-
-# class UserFriendRequestView(generics.ListAPIView):
-#     '''
-#     Return all friend requests of specified user_id.
-#     '''
-
-#     # see more: https://www.django-rest-framework.org/api-guide/filtering/#filtering-against-the-url
-#     serializer_class = FriendReadOnlySerializer
-
-#     def get_queryset(self):
-#         user_id = self.kwargs['user_id']
-#         return Friend.objects.filter(Q(followee=user_id) & Q(not_read=True))
+    def get(self, request, user_id):
+        # user_id = self.kwargs['user_id']
+        friend_requests = Friend.objects.filter(Q(followee_id=user_id) & Q(not_read=True))
+        friend_request_list = []
+        for friend_request in friend_requests:
+            friend_request_list.append(friend_request.follower_url)
+        
+        response = {"query": "followers", "authors": friend_request_list}
+        return Response(dict_to_json(response))
