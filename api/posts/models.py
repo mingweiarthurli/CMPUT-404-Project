@@ -19,14 +19,13 @@ TEXT_TYPE_CHOICES = [("text/plain", "text/plain"),
                      ("image/jpeg;base64", "image/jpeg;base64"),]
 
 class Post(models.Model):
-    # id = models.AutoField(primary_key=True)
     title = models.CharField(blank=False, max_length=200)
     source = models.URLField(null=False, blank=True)
     origin = models.URLField(null=False, blank=True)
     description = models.TextField(blank=True)
     contentType = models.TextField(choices=TEXT_TYPE_CHOICES, default='text/plain')
     content = models.TextField(blank=True, max_length=2000)
-    author = models.ForeignKey(User, on_delete = models.CASCADE, default=1, related_name="post_author")
+    author = models.ForeignKey(User, on_delete = models.CASCADE, related_name="post_author")
     categories = models.TextField(default="[]")
     # count = models.IntegerField(default=0)
     size = models.IntegerField(default=50)
@@ -39,8 +38,9 @@ class Post(models.Model):
     unlisted = models.BooleanField(default=False)
 
 class Comment(models.Model):
-    post = models.ForeignKey(Post, on_delete = models.CASCADE, default=1, related_name="post_comment")
-    author = author = models.ForeignKey(User, on_delete = models.CASCADE, default=1, related_name="comment_author")
+    # post = models.ForeignKey(Post, on_delete = models.CASCADE, default=1, related_name="post_comment")
+    post = models.TextField(blank=False, default=1)
+    author = author = models.ForeignKey(User, on_delete = models.CASCADE, related_name="comment_author")
     comment = models.TextField(blank=True, max_length=2000)
     contentType = models.TextField(choices=TEXT_TYPE_CHOICES, default='text/plain')
     published = models.DateTimeField(auto_now_add = True)            # time of the comment created

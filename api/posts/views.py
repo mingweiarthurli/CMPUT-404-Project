@@ -1,6 +1,7 @@
 from django.shortcuts import render
 
 # Create your views here.
+import json
 from rest_framework import viewsets, generics, mixins
 from rest_framework.views import APIView
 from rest_framework import permissions
@@ -11,8 +12,8 @@ from django.db.models import Q, Count
 from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 
-from posts.models import Post
-from posts.serializers import PostSerializer
+from posts.models import Post, Comment
+from posts.serializers import PostSerializer, CommentSerializer, CommentEditSerializer
 from posts.permissions import IsAuthorOrReadOnly, PostVisibility
 
 from friends.models import Friend
@@ -20,6 +21,9 @@ from friends.models import Friend
 import sys
 sys.path.append("..") 
 import connection_helper as helper
+
+def dict_to_json(dict):
+    return json.loads(json.dumps(dict))
 
 def check_friend(author, user):
     num_friends = Friend.objects.filter(Q(followee=author) & Q(follower=user) & Q(mutual=True)).count()
@@ -172,3 +176,92 @@ class VisibleUserPostView(generics.ListAPIView):
         else:
             posts = get_visible_posts(Post.objects.filter(Q(author=user_id) & Q(unlisted=False)), self.request.user)
             return posts
+
+class CommentViewSet(viewsets.ModelViewSet):
+    '''
+    retrieve:
+        Return a post instance.
+
+        Permission:
+            Any users: read only permission with posts shared with them
+
+    list:
+        Return all comments of the specified post.
+
+        Permission:
+            Any users: read only permission with posts shared with them
+
+    create:
+        Create a new comment for the specified post.
+
+        Expected POST JSON formmat:
+        {
+            "comment": "string",
+            "contentType": "text/plain",
+        }
+
+        Following fields will be generated automatically:
+        post: post UUID that specified as post_id in URL 
+        author: current user
+        published: current time
+        id: auto-generated UUID
+
+    delete:
+        Remove a existing post.
+
+        Permission:
+            Author: delete permission
+            Other users: denied
+
+    partial_update:
+        Update one or more fields on a existing post.
+
+        Permission:
+            Author: write permission
+            Other users: read only permission
+
+        !! Currently DO NOT SUPPORT updating images of the post.
+        !! DO NOT TRY updating images.
+
+    update:
+        Update a post.
+
+        Permission:
+            Author: write permission
+            Other users: read only permission
+
+        !! Currently DO NOT SUPPORT updating images of the post.
+        !! DO NOT TRY updating images.
+    '''
+    queryset = Comment.objects.all()
+
+    def get_serializer_class(self):
+        if self.action == 'create' or self.action == 'update':
+            return CommentEditSerializer
+        # elif self.action == 'update':
+        #     return FriendSerializer
+        # return PostReadOnlySerializer
+        return CommentSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        post_id = kwargs['post_id']
+        request.data["post"] = post_id
+
+        ok_response = dict_to_json({"query": "addComment", "success": True, "message": "Comment Added"})
+        forbidden_response = dict_to_json({"query": "addComment", "success": False, "message": "Comment not allowed"})
+
+        serializer = self.get_serializer_class()(data=request.data, context={'request': request})
+
+        if serializer.is_valid(raise_exception=True):
+            self.perform_create(serializer)
+            return Response(ok_response, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def list(self, request, *args, **kwargs):
+        post_id = kwargs['post_id']
+        queryset = Comment.objects.filter(Q(post=post_id))
+        serializer = self.get_serializer_class()(queryset, many=True, context={'request': request})
+        return Response(serializer.data)
