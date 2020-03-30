@@ -7,23 +7,21 @@ import {
   Message,
   Segment,
   Divider,
-  Container,
-  Popup
+  Container
 } from "semantic-ui-react";
+import { userSignup } from "../../ApiFetchers/posters/Axios";
 
 const SignUpForm = () => {
   const [collection, setCollection] = useState({
-    fname: "",
-    lname: "",
     email: "",
-    birthdate: "",
-    passcode: "",
-    confirm: "",
-    success: false
+    username: "",
+    password: "",
+    confirm: ""
   });
 
   const [problem, setProblem] = useState(0);
   const [checkerMsg, setCheckerMsg] = useState("");
+  const [success, setSuccess] = useState(false);
 
   const handleChange = name => event => {
     //simply sets the states using input value as user types
@@ -33,27 +31,18 @@ const SignUpForm = () => {
   const handleClick = event => {
     // check if the form elements are okay
     let goto_field = 0;
-    var {
-      fname,
-      lname,
-      email,
-      birthdate,
-      passcode,
-      confirm,
-      success
-    } = collection;
-    if (fname.length > 60 || lname.length > 60) {
+    var { email, username, password, confirm } = collection;
+    if (username.length > 60) {
       goto_field = 1;
     } else if (!email.includes("@") || !email.includes(".")) {
       goto_field = 2;
-    } else if (passcode !== confirm) {
+    } else if (password !== confirm) {
       goto_field = 3;
-    } else if (passcode.length < 6) {
+    } else if (password.length < 6) {
       goto_field = 4;
     } else {
       goto_field = 0;
     }
-
     if (goto_field === 0) {
       setProblem(goto_field);
       setCheckerMsg("");
@@ -68,7 +57,7 @@ const SignUpForm = () => {
       console.log("has issues " + problem);
       switch (problem) {
         case 1:
-          setCheckerMsg("name too long !!!");
+          setCheckerMsg("username is too long !!!");
           break;
         case 2:
           setCheckerMsg("invalid email format !!!");
@@ -82,12 +71,20 @@ const SignUpForm = () => {
       }
     }
     if (checkerMsg === "") {
-      console.log("do something");
+      setSuccess(true);
     }
   };
 
+  const redir = () => {
+    if (success === true && checkerMsg === "") {
+      var { email, username, password } = collection;
+      userSignup(email, username, password);
+      console.log("do something");
+    }
+  };
   return (
     <Container>
+      {redir()}
       <Grid.Row>
         <Grid.Row>
           <Divider horizontal>You Are Gonna Be Rich!</Divider>
@@ -104,27 +101,19 @@ const SignUpForm = () => {
               <Form size="large" onSubmit={handleSubmit}>
                 <Form.Input
                   fluid
-                  icon="address book"
-                  iconPosition="left"
-                  placeholder="First name"
-                  required
-                  onChange={handleChange("fname")}
-                />
-                <Form.Input
-                  fluid
-                  icon="address book outline"
-                  iconPosition="left"
-                  placeholder="Last name"
-                  required
-                  onChange={handleChange("lname")}
-                />
-                <Form.Input
-                  fluid
                   icon="envelope"
                   iconPosition="left"
-                  placeholder="Email address - (this is your username)"
+                  placeholder="Email address - (this is not your username)"
                   required
                   onChange={handleChange("email")}
+                />
+                <Form.Input
+                  fluid
+                  icon="user"
+                  iconPosition="left"
+                  placeholder="Username"
+                  required
+                  onChange={handleChange("username")}
                 />
                 <Form.Input
                   fluid
@@ -133,7 +122,7 @@ const SignUpForm = () => {
                   placeholder="Password"
                   type="password"
                   required
-                  onChange={handleChange("passcode")}
+                  onChange={handleChange("password")}
                 />
                 <Form.Input
                   fluid
@@ -143,20 +132,6 @@ const SignUpForm = () => {
                   type="password"
                   required
                   onChange={handleChange("confirm")}
-                />
-                <Popup
-                  trigger={
-                    <Form.Input
-                      fluid
-                      icon="birthday cake"
-                      iconPosition="left"
-                      placeholder="birthdate"
-                      type="date"
-                      required
-                      onChange={handleChange("birthdate")}
-                    />
-                  }
-                  content="please tell us your real birthdate, so we can suggest the right product to you"
                 />
                 <Button color="blue" fluid size="large" onClick={handleClick}>
                   Sign Up

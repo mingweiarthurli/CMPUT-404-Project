@@ -5,7 +5,6 @@ import BottomBar from "../Component/Fragments/BottomBar";
 const signIn = () => (
   <Fragment>
     <SignInForm />
-    <BottomBar />
   </Fragment>
 );
 export default signIn;

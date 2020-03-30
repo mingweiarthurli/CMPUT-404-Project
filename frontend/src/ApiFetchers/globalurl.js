@@ -4,8 +4,25 @@ import "react";
 var location = window.location;
 var protocol = location.protocol;
 var host = protocol.concat(`//${location.host}/api/`).replace("3000", "8000");
+var althost = protocol
+  .concat(`//${location.host}/auth/`)
+  .replace("3000", "8000");
 
 //The address of each url is specified in the return statement, they are expected to match the backend services.
+export const authRegister = () => {
+  return `${althost}register`;
+};
+//POST: add a new user to db => {email, username, password}
+
+export const authLogin = () => {
+  return `${althost}login`;
+};
+//POST: log user in => {email, username, password}
+
+export const authLogout = () => {
+  return `${althost}logout`;
+};
+//POST: clear csrf and logout => {}
 
 export const defaultVisiblePosts = () => {
   return `${host}author/posts`;
