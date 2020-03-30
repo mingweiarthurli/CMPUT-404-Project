@@ -176,7 +176,7 @@ class FriendRequestAcceptView(APIView):
 class UserFriendListView(APIView):
     '''
     get:
-        Return all friends of specified user_id
+        Return all friends of specified user_id.
 
         Expected response body example:
 
@@ -249,6 +249,7 @@ class UserFriendCheckView(APIView):
     }
     ```
     '''
+    # TODO: add compatibility for not existing user
     def get(self, request, user_id1, user_id2):
         # user_id1 = self.kwargs['user_id1']
         # user_id2 = self.kwargs['user_id2']
