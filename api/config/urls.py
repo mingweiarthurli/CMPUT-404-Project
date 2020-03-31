@@ -28,6 +28,8 @@ urlpatterns = [
     path('auth/', include('rest_auth.urls')),
     path('auth/register', include('rest_auth.registration.urls')),
     path('auth/accounts/', include('allauth.urls')),
+    #url(r'^api/', include(endpoints)),
+    url(r'^api/auth/', include('knox.urls')),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),     # add login option to Browsable API (authentication offered by rest-framework)
     #Actual Paths
     path('api/', include([

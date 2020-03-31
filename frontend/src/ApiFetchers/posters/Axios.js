@@ -9,9 +9,8 @@ import {
   authLogout
 } from "../globalurl";
 
-export const userSignin = (email, username, password) => {
+export const userSignin = (username, password) => {
   return axios.post(authLogin(), {
-    email,
     username,
     password
   });

@@ -7,7 +7,7 @@ import home from "../Pages/home";
 import signIn from "../Pages/signIn";
 import signUp from "../Pages/signUp";
 import posts from "../Pages/posts";
-import privateDashboard from "../Component/private/privateDashboard";
+import PrivateDashboard from "../Component/private/privateDashboard";
 
 const Routes = () => {
   return (
@@ -17,7 +17,7 @@ const Routes = () => {
         <Route path="/signin" exact component={signIn} />
         <Route path="/signup" exact component={signUp} />
         <Route path="/posts" exact component={posts} />
-        <Private path="/user/dashboard" exact component={privateDashboard} />
+        <Private path="/user/dashboard" exact component={PrivateDashboard} />
       </Switch>
     </BrowserRouter>
   );

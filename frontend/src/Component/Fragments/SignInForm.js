@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext, createContext } from "react";
 import {
   Button,
   Form,
@@ -16,7 +16,6 @@ import { getCurrentUsers } from "../../ApiFetchers/getters/Axios";
 const SignInForm = () => {
   const [authenticated, setAuthenticated] = useState(false);
   const [auth, setAuth] = useState({
-    email: "",
     username: "",
     password: "",
     error: "",
@@ -29,8 +28,19 @@ const SignInForm = () => {
   };
   const handleSubmit = e => {
     e.preventDefault();
-    let { email, username, password } = auth;
-    userSignin(email, username, password);
+    let { username, password } = auth;
+    userSignin(username, password).then(res => {
+      console.log(`auth: ${res.data.user.displayName} with ${res.data.token}`);
+      const helmet = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${res.data.token}`
+        }
+      };
+      getCurrentUsers(helmet).then(res => {
+        console.log(res.data);
+      });
+    });
   };
   return (
     <Container>
@@ -45,16 +55,7 @@ const SignInForm = () => {
               Login
             </Header>
             <Segment>
-              <Form size="large">
-                <Form.Input
-                  fluid
-                  icon="envelope"
-                  iconPosition="left"
-                  name="email"
-                  onChange={handleChange("email")}
-                  placeholder="Email address"
-                  required
-                />
+              <Form size="large" onSubmit={handleSubmit}>
                 <Form.Input
                   fluid
                   icon="user"
@@ -74,7 +75,7 @@ const SignInForm = () => {
                   type="password"
                   required
                 />
-                <Button color="blue" fluid size="large" onClick={handleSubmit}>
+                <Button color="blue" fluid size="large" type="submit">
                   Login
                 </Button>
                 <br />

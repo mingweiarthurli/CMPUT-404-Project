@@ -10,8 +10,8 @@ import {
   currentUser
 } from "../globalurl";
 
-export const getCurrentUsers = () => {
-  return axios.get(currentUser());
+export const getCurrentUsers = authorization => {
+  return axios.get(currentUser(), authorization);
 };
 
 export const getAllUsers = () => {

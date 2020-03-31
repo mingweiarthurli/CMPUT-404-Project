@@ -15,7 +15,7 @@ export const authRegister = () => {
 //POST: add a new user to db => {email, username, password}
 
 export const authLogin = () => {
-  return `${althost}login/`;
+  return `${host}login`;
 };
 //POST: log user in => {email, username, password}
 
@@ -25,7 +25,7 @@ export const authLogout = () => {
 //POST: clear csrf and logout => {}
 
 export const currentUser = () => {
-  return `${althost}user`;
+  return `${host}currentuser/`;
 };
 //GET: returns current user
 

@@ -2,6 +2,7 @@ from rest_framework import serializers, exceptions
 from rest_auth.serializers import LoginSerializer
 from rest_auth.registration.serializers import RegisterSerializer
 from rest_auth.serializers import UserDetailsSerializer
+from django.contrib.auth import authenticate
 
 from allauth.account import adapter, utils
 
@@ -83,3 +84,13 @@ class AuthorRegisterSerializer(RegisterSerializer):
         utils.setup_user_email(request, new_author, self)
 
         return new_author
+
+class AuthorLogInSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+
+    def validate(self, data):
+        user = authenticate(**data)
+        if user:
+            return user
+        raise serializers.ValidationError("Unable to log in with provided credentials.")

@@ -1,5 +1,11 @@
-from django.shortcuts import render
-from rest_framework import viewsets, generics, mixins
+from django.shortcuts import render, get_object_or_404
+from rest_framework import viewsets, generics, mixins, status, permissions
+from rest_framework.response import Response
+from rest_framework.decorators import permission_classes
+import requests, json
+from knox.models import AuthToken
+
+from .serializers import (UserSerializer, AuthorLogInSerializer)
 
 from users.models import User
 from users.serializers import UserSerializer
@@ -30,3 +36,31 @@ class UserViewSet(mixins.RetrieveModelMixin,
     '''
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+    def current_author(self, req):
+        if req.user.is_authenticated:
+            current_author = req.user
+            serializer = UserSerializer(current_author)
+            jsonified = json.dumps(serializer.data)
+            return Response(serializer.data)
+        else:
+            return Response({"authenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
+
+class LogInAPIView(generics.GenericAPIView):
+    serializer_class = AuthorLogInSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data
+        return Response({
+            "user": UserSerializer(user, context=self.get_serializer_context()).data,
+            "token": AuthToken.objects.create(user)[1]
+        })
+
+class CurrentAPIView(generics.RetrieveAPIView):
+    permission_classes = [permissions.IsAuthenticated, ]
+    serializer_class = UserSerializer
+
+    def get_object(self):
+        return self.request.user
