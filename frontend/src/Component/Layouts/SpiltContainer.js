@@ -33,7 +33,7 @@ const SplitContainer = () => {
       }
       setAuthorLoading(false);
     };
-    const getPosts = async () => {
+    /*const getPosts = async () => {
       setPostError(false);
       setPostLoading(true);
       try {
@@ -44,7 +44,7 @@ const SplitContainer = () => {
       }
       setPostLoading(false);
     };
-    getPosts();
+    getPosts();*/
     getAuthors();
   }, []);
   const openContent = (e, content) => {
@@ -81,7 +81,7 @@ const SplitContainer = () => {
                       src="https://react.semantic-ui.com/images/avatar/small/rachel.png"
                     />
                     <List.Content>
-                      <List.Header>{item.username}</List.Header>
+                      <List.Header>{item.displayName}</List.Header>
                       <Button animated size="tiny">
                         <Button.Content visible>Follow</Button.Content>
                         <Button.Content hidden>

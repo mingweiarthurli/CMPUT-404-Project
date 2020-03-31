@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Redirect } from "react-router-dom";
 import {
   Button,
   Form,
@@ -71,17 +72,25 @@ const SignUpForm = () => {
       }
     }
     if (checkerMsg === "") {
-      setSuccess(true);
+      var { email, username, password } = collection;
+      userSignup(email, username, password)
+        .then(res => {
+          console.log(res);
+          setSuccess(true);
+        })
+        .catch(e => {
+          setCheckerMsg("User Already Exists or Invalid Format");
+          setSuccess(false);
+        });
     }
   };
 
   const redir = () => {
-    if (success === true && checkerMsg === "") {
-      var { email, username, password } = collection;
-      userSignup(email, username, password);
-      console.log("do something");
+    if (checkerMsg === "" && success === true) {
+      return <Redirect to="/signin" />;
     }
   };
+
   return (
     <Container>
       {redir()}

@@ -40,22 +40,23 @@ export const idVisiblePosts = uid => {
 //GET: return all posts of author with the given {uid}
 
 export const myFriends = uid => {
-  return `${host}friends/${uid}/`;
+  return `${host}author/${uid}/friends/`;
 };
 //GET: get all friends associated with {uid} => basic_auth, {uid}
 export const myFollowers = uid => {
-  return `${host}followers/${uid}/`;
+  return `${host}author/${uid}/followers/`;
 };
 //GET: return all authors following {uid}
+export const myFriendRequests = uid => {
+  return `${host}author/${uid}/friendrequests/`;
+};
+//GET: return all types of friend requests => basic_auth, {uid}
 export const allFriendRequests = () => {
   return `${host}friendrequests/`;
 };
 //GET: return all records of friendrequests (of any authors)
 //POST: makes new follow request to be approved => basic_auth, {followee_url, follower_url}
-export const myFriendRequests = uid => {
-  return `${host}friendrequests/${uid}/`;
-};
-//GET: return all types of friend requests => basic_auth, {uid}
+
 export const acceptFriendRequests = uid => {
   return `${host}friendrequests/${uid}/accept`;
 };
@@ -81,7 +82,7 @@ export const idPosts = id => {
 //PUT: updates the post with {pid}
 //DELETE: delete a post with {pid}
 export const allUsers = () => {
-  return `${host}users/`;
+  return `${host}author/`;
 };
 //GET: all of the users
 //POST: register a new user

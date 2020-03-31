@@ -1,4 +1,5 @@
-import React, { useState, useContext, createContext } from "react";
+import React, { useState, useReducer } from "react";
+import { Redirect } from "react-router-dom";
 import {
   Button,
   Form,
@@ -10,6 +11,7 @@ import {
   Checkbox,
   Container
 } from "semantic-ui-react";
+import { userContext } from "../../ApiFetchers/userContext";
 import { userSignin } from "../../ApiFetchers/posters/Axios";
 import { getCurrentUsers } from "../../ApiFetchers/getters/Axios";
 
@@ -22,6 +24,9 @@ const SignInForm = () => {
     loading: false,
     redirecting: false
   });
+  const localSave = (k, v) => {
+    localStorage.setItem(k, v);
+  };
   const handleChange = name => event => {
     //simply sets the states using input value as user types
     setAuth({ ...auth, [name]: event.target.value });
@@ -30,20 +35,33 @@ const SignInForm = () => {
     e.preventDefault();
     let { username, password } = auth;
     userSignin(username, password).then(res => {
-      console.log(`auth: ${res.data.user.displayName} with ${res.data.token}`);
+      var currentToken = res.data.token;
       const helmet = {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Token ${res.data.token}`
         }
       };
-      getCurrentUsers(helmet).then(res => {
-        console.log(res.data);
-      });
+      getCurrentUsers(helmet)
+        .then(res => {
+          localSave("currentUser", res.data.displayName);
+          localSave("currentToken", currentToken);
+          localSave("currentID", res.data.id);
+          setAuthenticated(true);
+        })
+        .catch(e => {
+          setAuthenticated(false);
+        });
     });
+  };
+  const redir = () => {
+    if (authenticated === true) {
+      return <Redirect to="/" />;
+    }
   };
   return (
     <Container>
+      {redir()}
       <Grid.Row>
         <Grid.Row>
           <Divider horizontal>Welcome to Hindle's Wonderland</Divider>

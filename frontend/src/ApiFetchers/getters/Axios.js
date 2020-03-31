@@ -1,6 +1,7 @@
 import axios from "axios";
 import {
   allUsers,
+  allPosts,
   idUsers,
   defaultVisiblePosts,
   idVisiblePosts,
@@ -10,15 +11,18 @@ import {
   currentUser
 } from "../globalurl";
 
+// Return current user with token auth
 export const getCurrentUsers = authorization => {
   return axios.get(currentUser(), authorization);
 };
 
+// Return all authors in the world
 export const getAllUsers = () => {
   console.log(axios.get(allUsers()));
   return axios.get(allUsers());
 };
 
+// Get user with the ID specified
 export const getIdUsers = uid => {
   console.log(axios.get(idUsers(uid)));
   return axios.get(idUsers(uid));
