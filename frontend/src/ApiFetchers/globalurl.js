@@ -20,7 +20,7 @@ export const authLogin = () => {
 //POST: log user in => {email, username, password}
 
 export const authLogout = () => {
-  return `${althost}logout`;
+  return `${host}logout/`;
 };
 //POST: clear csrf and logout => {}
 
@@ -88,7 +88,7 @@ export const allUsers = () => {
 //POST: register a new user
 
 export const idUsers = uid => {
-  return `${host}users/${uid}/`;
+  return `${host}author/${uid}/`;
 };
 //GET: return the user with {uid}
 //PUT: update the user with {uid}

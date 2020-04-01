@@ -5,13 +5,17 @@ import {
   List,
   Button,
   Icon,
+  Item,
   Image,
-  Modal
+  Label,
+  Modal,
+  Divider
 } from "semantic-ui-react";
 import axios from "axios";
 import {
   getAllUsers,
-  getDefaultVisiblePosts
+  getDefaultVisiblePosts,
+  viewablePosts
 } from "../../ApiFetchers/getters/Axios";
 
 const SplitContainer = () => {
@@ -33,18 +37,18 @@ const SplitContainer = () => {
       }
       setAuthorLoading(false);
     };
-    /*const getPosts = async () => {
+    const getPosts = async () => {
       setPostError(false);
       setPostLoading(true);
       try {
-        const postFetcher = await getDefaultVisiblePosts();
+        const postFetcher = await viewablePosts();
         setPostData(postFetcher.data);
       } catch (error) {
         setPostError(true);
       }
       setPostLoading(false);
     };
-    getPosts();*/
+    getPosts();
     getAuthors();
   }, []);
   const openContent = (e, content) => {
@@ -52,10 +56,10 @@ const SplitContainer = () => {
     console.log(content);
   };
   return (
-    <Container textAlign="center">
-      <Grid column={2} divided>
+    <Container>
+      <Grid column={3} divided>
         <Grid.Row>
-          <Grid.Column width={3}>
+          <Grid.Column width={2} textAlign="center">
             <List.Header>
               <strong>Available Authors</strong>
             </List.Header>
@@ -94,10 +98,11 @@ const SplitContainer = () => {
               </List>
             )}
           </Grid.Column>
-          <Grid.Column width={13}>
+          <Grid.Column width={6}>
             <List.Header>
               <strong>Posts I Can See</strong>
             </List.Header>
+            <Divider></Divider>
             {postError && (
               <List.Item>
                 <List.Content>
@@ -112,33 +117,55 @@ const SplitContainer = () => {
                 </List.Content>
               </List.Item>
             ) : (
-              <List divided relaxed>
-                {postData.map(item => (
-                  <List.Item key={item.id}>
-                    <List.Content>
-                      <Modal
-                        trigger={
-                          <List.Header
-                            as="a"
-                            onClick={e => {
-                              openContent(e, item.content);
-                            }}
-                          >
-                            {item.id}
-                          </List.Header>
-                        }
-                      >
-                        <Modal.Content>
-                          <Modal.Description>{item.content}</Modal.Description>
-                        </Modal.Content>
-                      </Modal>
-                      <List.Description>{item.author}</List.Description>
-                      <List.Description>{item.mod_time}</List.Description>
-                    </List.Content>
-                  </List.Item>
+              <Item.Group divided>
+                {postData.map(post => (
+                  <Item key={post.id}>
+                    <Item.Content>
+                      <Item.Header as="a" style={{ color: "lightseagreen" }}>
+                        {post.title}
+                      </Item.Header>
+                      <Item.Description>{post.description}</Item.Description>
+                      <Item.Extra>
+                        <Label
+                          ribbon="right"
+                          color={
+                            post.visibility === "PUBLIC"
+                              ? "blue"
+                              : "midnightblue"
+                          }
+                        >
+                          {post.visibility}
+                        </Label>
+                        <Label.Group
+                          attached="bottom left"
+                          circular
+                          size="mini"
+                        >
+                          <Label icon="globe" content={post.contentType} />
+                          <Label
+                            icon="sort alphabet down"
+                            content={post.categories}
+                          />
+                          <Label
+                            icon="comment"
+                            content={post.comments.length}
+                          />
+                        </Label.Group>
+                      </Item.Extra>
+                      <Item.Meta>
+                        created @ {post.published} by{" "}
+                        <a style={{ color: "teal" }} href={post.author.url}>
+                          {post.author.displayName}
+                        </a>
+                      </Item.Meta>
+                    </Item.Content>
+                  </Item>
                 ))}
-              </List>
+              </Item.Group>
             )}
+          </Grid.Column>
+          <Grid.Column width={6}>
+            <div></div>
           </Grid.Column>
         </Grid.Row>
       </Grid>

@@ -41,8 +41,8 @@ INSTALLED_APPS = [
     # libraries
     'rest_framework',
     'rest_framework.authtoken',
-    'rest_auth',
-    'knox',
+    'rest_auth', #For registration
+    'knox', #For signin, signout, getcurrentuser
     'django.contrib.sites',
     'allauth',
     'allauth.account',

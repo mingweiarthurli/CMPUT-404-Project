@@ -8,6 +8,7 @@ import {
   TextArea,
   Select
 } from "semantic-ui-react";
+import { SliceLocalID } from "../../ClassSupport/APICalls/SliceLocalID";
 const typeOptions = [
   {
     key: "plaintext",
@@ -59,8 +60,16 @@ const NewPostForm = () => {
     content: "",
     origin: "",
     source: "",
-    author: "",
+    author: SliceLocalID(),
     visibility: "",
+    categories: [],
+    count: 0,
+    size: 50,
+    next: "",
+    comments: [],
+    unlisted: false,
+    published: "",
+    id: "",
     error: "",
     loading: false,
     redirecting: false

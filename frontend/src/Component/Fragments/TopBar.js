@@ -1,27 +1,11 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { Redirect } from "react-router-dom";
-import {
-  getMyFollowers,
-  getMyFriendRequests,
-  getMyFriends
-} from "../../ApiFetchers/getters/Axios";
+import { AvatarSwitch } from "../../ClassSupport/APICalls/AvatarSwitch";
 import FriendshipButtons from "./FriendshipButtons";
 import ImgUpload from "./ImgUpload";
 import NewPostForm from "./NewPostForm";
-import {
-  Label,
-  Menu,
-  Dropdown,
-  List,
-  Button,
-  Form,
-  Modal,
-  ListContent,
-  Select,
-  Segment
-} from "semantic-ui-react";
+import { Label, Menu, Dropdown, Modal } from "semantic-ui-react";
 
-var username = localStorage.getItem("currentUser");
 const avatarOptions = [
   {
     key: "myPosts",
@@ -51,16 +35,26 @@ const avatarOptions = [
 
 const TopBar = () => {
   const [redir, setRedir] = useState(null);
+  const [displayUsername, setDisplayUsername] = useState("");
   const handleSpecialRoutes = (e, { value }) => {
     e.preventDefault();
-    setRedir(value);
+    setRedir(AvatarSwitch(value));
   };
+
   const handleRedir = () => {
     if (redir != null && redir.length > 2) {
       return <Redirect to={redir} />;
+    } else if (localStorage.getItem("currentToken") === null) {
+      return <Redirect to="signin" />;
     }
   };
-
+  useEffect(() => {
+    var fetchFromLocal = () => {
+      let name = localStorage.getItem("currentUser");
+      setDisplayUsername(name);
+    };
+    fetchFromLocal();
+  }, []);
   return (
     <Fragment>
       {handleRedir()}
@@ -104,7 +98,7 @@ const TopBar = () => {
           </Modal>
           <div style={{ textAlign: "center", marginTop: "20px" }}>
             <Dropdown
-              text={username}
+              text={displayUsername}
               icon="user"
               size="small"
               floating

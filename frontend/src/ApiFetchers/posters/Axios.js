@@ -27,7 +27,9 @@ export const userSignup = (email, username, password) => {
 
 export const userLogout = () => {
   const cookieClear = {
-    "X-CSRFToken": Cookies.get("csrftoken")
+    "X-CSRFToken": Cookies.get("csrftoken"),
+    Authorization: `Token ${localStorage.getItem("currentToken")}`
   };
+  localStorage.clear();
   return axios.post(authLogout(), null, { headers: cookieClear });
 };

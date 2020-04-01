@@ -16,15 +16,17 @@ export const getCurrentUsers = authorization => {
   return axios.get(currentUser(), authorization);
 };
 
+export const viewablePosts = () => {
+  return axios.get(allPosts());
+};
 // Return all authors in the world
 export const getAllUsers = () => {
   console.log(axios.get(allUsers()));
   return axios.get(allUsers());
 };
 
-// Get user with the ID specified
+// Get user profile with the ID specified
 export const getIdUsers = uid => {
-  console.log(axios.get(idUsers(uid)));
   return axios.get(idUsers(uid));
 };
 

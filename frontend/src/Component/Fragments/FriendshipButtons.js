@@ -13,13 +13,13 @@ import {
   ListContent
 } from "semantic-ui-react";
 var localID = localStorage.getItem("currentID");
-console.log(localID);
 const FriendshipButtons = () => {
   const [activeItem, setActiveItem] = useState("Followers");
   const [followersLoading, setFollowersLoading] = useState(true);
   const [followersError, setFollowersError] = useState(false);
   const [followers, setFollowers] = useState([]);
   const [friendRequestsLoading, setFriendRequestsLoading] = useState(true);
+  const [friendRequestsError, setFriendRequestsError] = useState(false);
   const [friendRequests, setFriendRequests] = useState([]);
   const [friendsLoading, setFriendsLoading] = useState(true);
   const [friendsError, setFriendsError] = useState(false);
@@ -56,10 +56,22 @@ const FriendshipButtons = () => {
       }
       setFriendsLoading(false);
     }; //fetch friends
+    const friendRequestsList = async () => {
+      setFriendRequestsError(false);
+      setFriendRequestsLoading(true);
+      /*try {
+        if (localID !== undefined) {
+          let friendRequestsFetcher = await getMyFriendRequests(localID); //get data from api's url
+          setFriendRequests(friendRequestsFetcher.authors);
+        }
+      } catch (error) {
+        setFriendRequestsError(true);
+      }*/
+      setFriendRequestsLoading(false);
+    };
     followersList();
     friendsList();
-    //console.log(friends);
-    //console.log(followers);
+    friendRequestsList();
   }, []);
 
   return (
@@ -184,7 +196,41 @@ const FriendshipButtons = () => {
         <Modal.Header>Out Going Requests</Modal.Header>
         <Modal.Content>
           <Modal.Description>
-            <p>Notifications</p>
+            {friendRequestsError && (
+              <List.Item>
+                <List.Content>
+                  <List.Description>Something went wrong ...</List.Description>
+                </List.Content>
+              </List.Item>
+            )}
+            {friendRequestsLoading ? (
+              <List.Item>
+                <List.Content>
+                  <List.Description>Loading ...</List.Description>
+                </List.Content>
+              </List.Item>
+            ) : (
+              <List relaxed>
+                {friendRequests !== undefined ? (
+                  friendRequests.map(item => (
+                    <List.Item key={item.id}>
+                      <ListContent>
+                        <List.Header as="a">{item.id}</List.Header>
+                        <List.Content floated="right">
+                          <Button>Cancel</Button>
+                        </List.Content>
+                      </ListContent>
+                    </List.Item>
+                  ))
+                ) : (
+                  <List.Item>
+                    <List.Description>
+                      Something is Not Right...
+                    </List.Description>
+                  </List.Item>
+                )}
+              </List>
+            )}
           </Modal.Description>
         </Modal.Content>
       </Modal>
