@@ -6,80 +6,79 @@ import {
   Container,
   Input,
   TextArea,
-  Select
+  Select,
 } from "semantic-ui-react";
 import { SliceLocalID } from "../../ClassSupport/APICalls/SliceLocalID";
 const typeOptions = [
   {
     key: "plaintext",
     text: "Plain Text",
-    value: "plaintext"
+    value: "plaintext",
   },
   {
     key: "markdown",
     text: "Mark Down",
-    value: "markdown"
-  }
+    value: "markdown",
+  },
 ];
 const visabilityOptions = [
   {
     key: "public",
     text: "Public",
-    value: "public"
+    value: "public",
   },
 
   {
     key: "foaf",
     text: "FOAF",
-    value: "foaf"
+    value: "foaf",
   },
   {
     key: "friends",
     text: "Friends",
-    value: "friends"
+    value: "friends",
   },
 
   {
     key: "friendsonhost",
     text: "Friends on My Host",
-    value: "friendsonhost"
+    value: "friendsonhost",
   },
   {
     key: "myself",
     text: "Myself",
-    value: "myself"
-  }
+    value: "myself",
+  },
 ];
 const NewPostForm = () => {
-  const [ready, setReady] = useState(false);
-  const [dataSet, setDataSet] = useState({
-    title: "",
-    category: "",
-    description: "",
-    contentType: "",
-    content: "",
-    origin: "",
-    source: "",
-    author: SliceLocalID(),
-    visibility: "",
-    categories: [],
-    count: 0,
-    size: 50,
-    next: "",
-    comments: [],
-    unlisted: false,
-    published: "",
-    id: "",
-    error: "",
-    loading: false,
-    redirecting: false
+  const [ready, setReady] = useState({
+    error: false,
+    redirecting: false,
   });
-  const handleSubmit = e => {
+  const [dataSet, setDataSet] = useState({
+    title: "", //
+    categories: "", //
+    description: "", //
+    contentType: "", //
+    content: "", //
+    author: SliceLocalID(), //
+    visibility: "", //
+    size: 0, //
+    next: "", //
+    unlisted: false, //
+    //comments: [],
+    //origin: "",
+    //source: "",
+    //count: 0,
+    //published: "",
+    //id: "",
+  });
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setReady(true);
+    setReady({ ...ready, error: false });
     console.log(dataSet);
   };
-  const handleInput = name => event => {
+  const handleInput = (name) => (event) => {
     //simply sets the states using input value as user types
     setDataSet({ ...dataSet, [name]: event.target.value });
   };
@@ -110,7 +109,7 @@ const NewPostForm = () => {
                   required
                   id="post-category"
                   control={Input}
-                  onChange={handleInput("category")}
+                  onChange={handleInput("categories")}
                   label="Category"
                   placeholder="Category"
                 />
@@ -144,22 +143,6 @@ const NewPostForm = () => {
               onChange={handleInput("content")}
               style={{ minHeight: "180px" }}
             />
-            <Form.Group widths="equal">
-              <Form.Field
-                id="post-source"
-                control={Input}
-                onChange={handleInput("source")}
-                label="Source"
-                placeholder="Source"
-              />
-              <Form.Field
-                id="post-origin"
-                control={Input}
-                label="Origin"
-                onChange={handleInput("origin")}
-                placeholder="Origin"
-              />
-            </Form.Group>
             <Form.Group width="equal">
               <Form.Field
                 required
@@ -175,7 +158,7 @@ const NewPostForm = () => {
                 color="blue"
                 fluid
                 size="small"
-                onClick={e => {
+                onClick={(e) => {
                   handleSubmit(e);
                 }}
               >

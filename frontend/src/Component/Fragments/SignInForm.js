@@ -9,7 +9,7 @@ import {
   Segment,
   Divider,
   Checkbox,
-  Container
+  Container,
 } from "semantic-ui-react";
 import { userContext } from "../../ApiFetchers/userContext";
 import { userSignin } from "../../ApiFetchers/posters/Axios";
@@ -22,34 +22,35 @@ const SignInForm = () => {
     password: "",
     error: "",
     loading: false,
-    redirecting: false
+    redirecting: false,
   });
   const localSave = (k, v) => {
     localStorage.setItem(k, v);
   };
-  const handleChange = name => event => {
+  const handleChange = (name) => (event) => {
     //simply sets the states using input value as user types
     setAuth({ ...auth, [name]: event.target.value });
   };
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     let { username, password } = auth;
-    userSignin(username, password).then(res => {
+    userSignin(username, password).then((res) => {
       var currentToken = res.data.token;
       const helmet = {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Token ${res.data.token}`
-        }
+          Authorization: `Token ${res.data.token}`,
+        },
       };
       getCurrentUsers(helmet)
-        .then(res => {
+        .then((res) => {
           localSave("currentUser", res.data.displayName);
           localSave("currentToken", currentToken);
           localSave("currentID", res.data.id);
+          localSave("currentHost", res.data.host);
           setAuthenticated(true);
         })
-        .catch(e => {
+        .catch((e) => {
           setAuthenticated(false);
         });
     });

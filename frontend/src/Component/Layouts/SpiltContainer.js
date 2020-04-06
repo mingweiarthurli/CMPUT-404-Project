@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import _ from "lodash";
 import {
   Container,
   Grid,
@@ -7,15 +8,18 @@ import {
   Icon,
   Item,
   Image,
+  Card,
+  Feed,
   Label,
   Modal,
-  Divider
+  Divider,
+  ModalDescription,
 } from "semantic-ui-react";
 import axios from "axios";
 import {
   getAllUsers,
   getDefaultVisiblePosts,
-  viewablePosts
+  viewablePosts,
 } from "../../ApiFetchers/getters/Axios";
 
 const SplitContainer = () => {
@@ -51,9 +55,8 @@ const SplitContainer = () => {
     getPosts();
     getAuthors();
   }, []);
-  const openContent = (e, content) => {
+  const onAuthorClick = (e) => {
     e.preventDefault();
-    console.log(content);
   };
   return (
     <Container>
@@ -78,7 +81,7 @@ const SplitContainer = () => {
               </List.Item>
             ) : (
               <List divided relaxed>
-                {authorData.map(item => (
+                {authorData.map((item) => (
                   <List.Item key={item.id}>
                     <Image
                       avatar
@@ -87,7 +90,14 @@ const SplitContainer = () => {
                     <List.Content>
                       <List.Header>{item.displayName}</List.Header>
                       <Button animated size="tiny">
-                        <Button.Content visible>Follow</Button.Content>
+                        <Button.Content visible>
+                          {item.host === localStorage.getItem("currentHost") ? (
+                            <Icon name="registered" />
+                          ) : (
+                            <Icon name="registered outline" />
+                          )}
+                          Follow
+                        </Button.Content>
                         <Button.Content hidden>
                           <Icon name="arrow right" />
                         </Button.Content>
@@ -118,13 +128,9 @@ const SplitContainer = () => {
               </List.Item>
             ) : (
               <Item.Group divided>
-                {postData.map(post => (
+                {postData.map((post) => (
                   <Item key={post.id}>
                     <Item.Content>
-                      <Item.Header as="a" style={{ color: "lightseagreen" }}>
-                        {post.title}
-                      </Item.Header>
-                      <Item.Description>{post.description}</Item.Description>
                       <Item.Extra>
                         <Label
                           ribbon="right"
@@ -136,11 +142,87 @@ const SplitContainer = () => {
                         >
                           {post.visibility}
                         </Label>
-                        <Label.Group
-                          attached="bottom left"
-                          circular
-                          size="mini"
-                        >
+                      </Item.Extra>
+                      <Modal
+                        trigger={
+                          <Item.Header
+                            as="a"
+                            style={{
+                              color: "lightseagreen",
+                              textAlign: "center",
+                            }}
+                          >
+                            {post.title}
+                          </Item.Header>
+                        }
+                      >
+                        <Modal.Header style={{ textAlign: "center" }}>
+                          {post.title}
+                        </Modal.Header>
+                        <Grid>
+                          <Grid.Row>
+                            <Grid.Column width={10}>
+                              <Modal.Content>
+                                <Modal.Description
+                                  style={{
+                                    minHeight: "150px",
+                                    textAlign: "center",
+                                    marginTop: "10px",
+                                  }}
+                                >
+                                  {post.content}
+                                </Modal.Description>
+                                <Divider></Divider>
+                                <Modal.Description
+                                  style={{
+                                    maxHeight: "20px",
+                                    marginLeft: "5px",
+                                  }}
+                                >
+                                  posted at {post.published} in{" "}
+                                  {post.categories} sections
+                                </Modal.Description>
+                              </Modal.Content>
+                            </Grid.Column>
+                            <Grid.Column width={6}>
+                              <Modal.Content>
+                                <Modal.Header>
+                                  <strong>Comments</strong>
+                                  <br />
+                                </Modal.Header>
+                                <Divider></Divider>
+                                <ModalDescription>
+                                  {post.comments.map((key) => (
+                                    <Card
+                                      style={{ backgroundColor: "teal" }}
+                                      key={key.id}
+                                    >
+                                      <Card.Content>
+                                        <Feed>
+                                          <Feed.Event>
+                                            <Feed.Content>
+                                              <Feed.Date>
+                                                {key.author.displayName} @{" "}
+                                                {key.published}
+                                              </Feed.Date>
+                                              <Feed.Content>
+                                                {key.comment}
+                                              </Feed.Content>
+                                            </Feed.Content>
+                                          </Feed.Event>
+                                        </Feed>
+                                      </Card.Content>
+                                    </Card>
+                                  ))}
+                                </ModalDescription>
+                              </Modal.Content>
+                            </Grid.Column>
+                          </Grid.Row>
+                        </Grid>
+                      </Modal>
+                      <Item.Description>{post.description}</Item.Description>
+                      <Item.Extra>
+                        <Label.Group attached="bottom left" size="mini">
                           <Label icon="globe" content={post.contentType} />
                           <Label
                             icon="sort alphabet down"
