@@ -5,10 +5,8 @@ from rest_framework.decorators import permission_classes
 import requests, json
 from knox.models import AuthToken
 
-from .serializers import (UserSerializer, AuthorLogInSerializer)
-
 from users.models import User
-from users.serializers import UserSerializer
+from users.serializers import UserSerializer, UserRawSerializer, UserSerializer, AuthorLogInSerializer
 
 
 # code reference:
@@ -45,6 +43,27 @@ class UserViewSet(mixins.RetrieveModelMixin,
             return Response(serializer.data)
         else:
             return Response({"authenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
+
+    def update(self, request, *args, **kwargs):
+        # convert firstName and lastName to first_name and last_name
+        if "firstName" in request.data:
+            request.data["first_name"] = request.data["firstName"]
+        if "lastName" in request.data:
+            request.data["last_name"] = request.data["lastName"]
+
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = UserRawSerializer(instance, data=request.data, partial=partial, context={'request': request})  # using UserRawSerializer to update
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        response_serializer = UserSerializer(instance, many=False, context={'request': request})                    # using UserSerializer to show response
+        return Response(response_serializer.data)
 
 class LogInAPIView(generics.GenericAPIView):
     serializer_class = AuthorLogInSerializer
