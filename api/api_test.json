@@ -33,6 +33,12 @@ POST /friendrequest/
     }
 }
 
+{
+    "non_field_errors": [
+        "The fields followee_id, follower_id must make a unique set."
+    ]
+}
+
 POST /author/{user_id}/friends/
 {
 	"query":"friends",
