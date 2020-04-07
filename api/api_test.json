@@ -2,16 +2,16 @@ POST /friendrequest/
 {
     "query":"friendrequest",
     "author": {
-        "id":"https://cmput-404-project.herokuapp.com/author/391daca7-e3f9-4cfa-8c15-c0a47ad9af8b",
-        "host":"https://cmput-404-project.herokuapp.com/",
-        "displayName":"user1",
-        "url":"https://cmput-404-project.herokuapp.com/author/391daca7-e3f9-4cfa-8c15-c0a47ad9af8b"
-    },
-    "friend": {
         "id":"https://cmput-404-project.herokuapp.com/author/627cd4f6-81f5-40bb-a836-5377ab94cb30",
         "host":"https://cmput-404-project.herokuapp.com/",
         "displayName":"admin",
         "url":"https://cmput-404-project.herokuapp.com/author/627cd4f6-81f5-40bb-a836-5377ab94cb30"
+    },
+    "friend": {
+        "id":"https://cmput-404-project.herokuapp.com/author/f67c1715-2879-4b2e-8a0e-06dcd8f4cb84",
+        "host":"https://cmput-404-project.herokuapp.com/",
+        "displayName":"user3",
+        "url":"https://cmput-404-project.herokuapp.com/author/f67c1715-2879-4b2e-8a0e-06dcd8f4cb84"
 
     }
 }

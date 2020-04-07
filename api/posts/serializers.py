@@ -8,6 +8,17 @@ from users.serializers import AuthorInfoSerializer
 
 from config.settings import DEFAULT_HOST
 
+class ListField(serializers.JSONField):
+    def to_representation(self, obj):
+        # Use the method `get_params` from the Awesome class
+        return json.loads(obj)
+
+    def to_internal_value(self, data):
+        # Set the key `date` just for the example
+        print(type(data))
+        print(data)
+        return json.dumps(data)
+
 class CommentSerializer(serializers.ModelSerializer):
     author = AuthorInfoSerializer(many=False, read_only=True)
 
@@ -27,11 +38,13 @@ class PostSerializer(serializers.HyperlinkedModelSerializer):
     count = serializers.SerializerMethodField()
     comments = serializers.SerializerMethodField()
     # comments = CommentSerializer(many=True, read_only=True)
+    categories = ListField()
+    visibleTo = ListField()
 
     class Meta:
         model = Post
         fields = ('title', 'source', 'origin', 'description', 'contentType', 'content', 
-                  'author', 'categories', 'count', 'size', 'next', 'comments', 'published', 
+                  'author', 'categories', 'count', 'comments', 'published', 
                   'id', 'visibility', 'visibleTo', 'unlisted')
         # fields = ('title', 'source', 'origin', 'description', 'contentType', 'content', 
         #           'author', 'categories', 'size', 'next', 'comments', 'published', 
