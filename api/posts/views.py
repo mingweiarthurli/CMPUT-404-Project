@@ -14,9 +14,11 @@ from django.shortcuts import get_object_or_404
 
 from posts.models import Post, Comment
 from posts.serializers import PostSerializer, CommentSerializer, CommentEditSerializer
-from posts.permissions import IsAuthorOrReadOnly, PostVisibility
+from posts.permissions import IsAuthorOrReadOnly
 
 from friends.models import Friend
+
+from config.settings import DEFAULT_HOST
 
 import sys
 sys.path.append("..") 
@@ -25,59 +27,62 @@ import connection_helper as helper
 def dict_to_json(dict):
     return json.loads(json.dumps(dict))
 
-def check_friend(author_url, user_url):
+def check_friend(user_url, author_url):
+    '''
+    check whether the given users are friend
+    '''
     # check both sides to avoid any accidence
     num_friends1 = Friend.objects.filter(Q(followee_url=author_url) & Q(follower_url=user_url) & Q(mutual=True)).count()
     num_friends2 = Friend.objects.filter(Q(followee_url=user_url) & Q(follower_url=author_url) & Q(mutual=True)).count()
     num_friends = num_friends1 + num_friends2
-    if num_friends > 0:
+    if num_friends > 0:     # local server has record of this pair of friend
         return True
-    else:
-        response = helper.check_friend(author_url, user_url)
+    else:                   # check remote server
+        response = helper.check_friend(user_url, author_url)
         return response
 
-def check_FOAF(author, user):
-    visible = check_friend(author, user)
+def check_FOAF(user_url, author_url):
+    '''
+    Check whether the given users are FOAF.
+    '''
+    visible = check_friend(user_url, author_url)
 
-    if not visible:             # if not friend, then check if they are FOAF
-        author_friends = Friend.objects.filter(Q(followee=author) & Q(mutual=True))
-        user_friends = Friend.objects.filter(Q(followee=user) & Q(mutual=True))
-
-        for author_friend in author_friends:
-            for user_friend in user_friends:
-                if author_friend.follower == user_friend.follower:
-                    return True
-    else:
-        return False
+    if visible:         # if are friend, return True
+        return True
+    else:               # if not friend, then check if they are FOAF
+        response = helper.check_FOAF(user_url, author_url)
+        return response
 
 def get_visible_posts(posts, user):
     user_url = f"{user.host}author/{user.id}"
     user_host = user.host
     visible_posts = []
 
-    for post in post:
+    for post in posts:
         author_url = post["author"]["id"]
         author_host = post["author"]["host"]
         if post["author"]["id"] == user_url:                                        # current user's post
+            visible_posts.append(post)
+        elif post["visibility"] == "PUBLIC":                                        # public post
             visible_posts.append(post)
         elif post["visibility"] == "SERVERONLY" and user_host == author_host:       # current user in the same server with the author
             visible_posts.append(post)
         elif post["visibility"] == "PRIVATE" and user_url in post["visibleTo"]:     # current user in the visibleTo list
             visible_posts.append(post)
         elif post["visibility"] == "FRIENDS":                                       # current user is the friend of the author
-            friend_status = check_friend(author_url, user_url)
+            friend_status = check_friend(user_url, author_url)
             if friend_status:
                 visible_posts.append(post)
-        # elif post["visibility"] == "FOAF":                                          # current user is the FOAF of the author
-        #     FOAF_status = check_FOAF(author_url, user_url)
-        #     if FOAF_status:
-        #         visible_posts.append(post)
+        elif post["visibility"] == "FOAF":                                          # current user is the FOAF of the author
+            FOAF_status = check_FOAF(user_url, author_url)
+            if FOAF_status:
+                visible_posts.append(post)
 
     return visible_posts
 
 def get_user_posts(posts, user_id):
     '''
-    get posts of specific author
+    Get posts of specific author.
     '''
     user_post_list = []
     for post in posts:
@@ -89,6 +94,9 @@ def get_user_posts(posts, user_id):
     return user_post_list
 
 def get_public_posts(posts):
+    '''
+    Return the public posts of the given posts.
+    '''
     public_posts = []
     for post in posts:
         if post["visibility"] == "PUBLIC":
@@ -101,7 +109,7 @@ def get_posts(user, only_public, specify_author, author_id):
     If only_public is True, return only public posts.
     If specify_author is True, return the posts of specified user.
     '''
-    queryset = Post.objects.filter(Q(visibility="PUBLIC") & Q(unlisted=False))      # local posts
+    queryset = Post.objects.filter(Q(unlisted=False))      # local posts
     serializer = PostSerializer(queryset, many=True)
 
     remote_posts = helper.get_remote_posts("https://spongebook-develop.herokuapp.com/")
@@ -114,11 +122,39 @@ def get_posts(user, only_public, specify_author, author_id):
         post_list = get_public_posts(post_list)
     elif specify_author:
         post_list = get_user_posts(post_list, author_id)
+        post_list = get_visible_posts(post_list, user)
     else:
         post_list = get_visible_posts(post_list, user)
 
     return post_list
 
+def check_psot_permission(post, user):
+    '''
+    Check whether the user has permission to read the given post.
+    Input is serialized post.
+    Return True or False.
+    '''
+    user_url = f"{user.host}author/{user.id}"
+    user_host = user.host
+
+    author_url = post["author"]["id"]
+    author_host = post["author"]["host"]
+    if post["author"]["id"] == user_url:                                        # current user's post
+        return True
+    elif post["visibility"] == "PUBLIC":                                        # public post
+        return True
+    elif post["visibility"] == "SERVERONLY" and user_host == author_host:       # current user in the same server with the author
+        return True
+    elif post["visibility"] == "PRIVATE" and user_url in post["visibleTo"]:     # current user in the visibleTo list
+        return True
+    elif post["visibility"] == "FRIENDS":                                       # current user is the friend of the author
+        friend_status = check_friend(user_url, author_url)
+        return friend_status
+    elif post["visibility"] == "FOAF":                                          # current user is the FOAF of the author
+        FOAF_status = check_FOAF(user_url, author_url)
+        return FOAF_status
+
+    return False
 
 # code reference:
 # Andreas Poyiatzis; https://medium.com/@apogiatzis/create-a-restful-api-with-users-and-jwt-authentication-using-django-1-11-drf-part-2-eb6fdcf71f45
@@ -129,6 +165,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
         Permission:
             Any users: read only permission with posts shared with them
+        If the request user is unauthorized or has no permission, a status code "403 Forbidden" will be returned.
 
     list:
         Return all listed public posts.
@@ -155,9 +192,7 @@ class PostViewSet(viewsets.ModelViewSet):
         Permission:
             Author: write permission
             Other users: read only permission
-
-        !! Currently DO NOT SUPPORT updating images of the post.
-        !! DO NOT TRY updating images.
+        If the request user is unauthorized or has no permission, a status code "403 Forbidden" will be returned.
 
     update:
         Update a post.
@@ -165,12 +200,21 @@ class PostViewSet(viewsets.ModelViewSet):
         Permission:
             Author: write permission
             Other users: read only permission
+        If the request user is unauthorized or has no permission, a status code "403 Forbidden" will be returned.
 
-        !! Currently DO NOT SUPPORT updating images of the post.
-        !! DO NOT TRY updating images.
+    visible_posts:
+        Return all posts that visible to the currently authenticated user.
+
+    visible_user_posts:
+        Return all posts of specified user that visible to the currently authenticated user.
     '''
     queryset = Post.objects.all()
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly, PostVisibility)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly)
+    def get_post_object(self, pk):
+        try:
+            return Post.objects.get(id=pk)
+        except Post.DoesNotExist:
+            raise Http404
     
     def get_serializer_class(self):
         return PostSerializer
@@ -185,11 +229,19 @@ class PostViewSet(viewsets.ModelViewSet):
 
         return Response(public_post_list)
 
+    def retrieve(self, request, pk):
+        post = self.get_post_object(pk)
+        serializer = PostSerializer(post, many=False)
+
+        if check_psot_permission(serializer.data, self.request.user):
+            return Response(serializer.data)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
     @action(detail=False, methods="GET")
     def visible_posts(self, request, *args, **kwargs):
         if self.request.user.is_anonymous:      # to check if current user is an anonymous user first, since Q query cannot accept anonymous user
             public_post_list = get_posts(request.user, True, False, None)
-
             return Response(public_post_list)
         else:
             visible_post_list = get_posts(request.user, False, False, None)
@@ -209,49 +261,10 @@ class PostViewSet(viewsets.ModelViewSet):
 
             return Response(visible_user_post_list)
 
-# class VisiblePostView(APIView):
-#     '''
-#     Return all posts that visible to the currently authenticated user.
-#     '''
-
-#     # see more: https://www.django-rest-framework.org/api-guide/filtering/#filtering-against-the-url
-#     # serializer_class = PostSerializer
-#     # permission_classes = (PostVisibility,)
-
-#     def get(self, request):
-#         if self.request.user.is_anonymous:      # to check if current user is an anonymous user first, since Q query cannot accept anonymous user
-#             return Post.objects.filter(Q(visibility="PUBLIC") & Q(unlisted=False))
-#         else:
-#             queryset = Post.objects.filter(Q(unlisted=False))   # local posts
-#             serializer = PostSerializer(queryset, many=True, context={'request': request})
-#             remote_posts = helper.get_remote_posts("https://spongebook-develop.herokuapp.com/")
-#             post_list = serializer.data + remote_posts
-#             visible_post_list = get_visible_posts(post_list, request.user)
-
-#             return visible_post_list
-
-# class VisibleUserPostView(generics.ListAPIView):
-#     '''
-#     Return all posts of specified user that visible to the currently authenticated user.
-#     '''
-    
-#     # see more: https://www.django-rest-framework.org/api-guide/filtering/#filtering-against-the-url
-#     serializer_class = PostSerializer
-#     permission_classes = (PostVisibility,)
-
-#     def get_queryset(self):
-#         user_id = self.kwargs['user_id']
-
-#         if self.request.user.is_anonymous:      # to check if current user is an anonymous user first, since Q query cannot accept anonymous user
-#             return Post.objects.filter(Q(visibility="PUBLIC") & Q(author=user_id) & Q(unlisted=False))
-#         else:
-#             posts = get_visible_posts(Post.objects.filter(Q(author=user_id) & Q(unlisted=False)), self.request.user)
-#             return posts
-
 class CommentViewSet(viewsets.ModelViewSet):
     '''
     retrieve:
-        Return a post instance.
+        Return a comment instance.
 
         Permission:
             Any users: read only permission with posts shared with them
@@ -276,35 +289,44 @@ class CommentViewSet(viewsets.ModelViewSet):
             "comment": "string",
             "contentType": "text/plain",
         }
+        If createed successfully, a following body will be returned with status code "200 OK":
+        {
+            "query": "addComment",
+            "success":true,
+            "message":"Comment Added"
+        }
+        If the request user is unauthorized or has no permission, a status code "403 Forbidden" will be returned with body:
+        {
+            "query": "addComment",
+            "success":false,
+            "message":"Comment not allowed"
+        }
 
     delete:
-        Remove a existing post.
+        Remove a existing comment.
 
         Permission:
             Author: delete permission
             Other users: denied
 
     partial_update:
-        Update one or more fields on a existing post.
+        Update one or more fields on a existing comment.
 
         Permission:
             Author: write permission
             Other users: read only permission
-
-        !! Currently DO NOT SUPPORT updating images of the post.
-        !! DO NOT TRY updating images.
+        If the request user is unauthorized or has no permission, a status code "403 Forbidden" will be returned.
 
     update:
-        Update a post.
+        Update a comment.
 
         Permission:
             Author: write permission
             Other users: read only permission
-
-        !! Currently DO NOT SUPPORT updating images of the post.
-        !! DO NOT TRY updating images.
+        If the request user is unauthorized or has no permission, a status code "403 Forbidden" will be returned.
     '''
     queryset = Comment.objects.all()
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly)
 
     def get_serializer_class(self):
         if self.action == 'create' or self.action == 'update':
@@ -314,8 +336,9 @@ class CommentViewSet(viewsets.ModelViewSet):
         # return PostReadOnlySerializer
         return CommentSerializer
 
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+    # using perform_create to add default author doesn't work for the inherited create function
+    # def perform_create(self, serializer):
+    #     serializer.save(author=self.request.user)
 
     def create(self, request, *args, **kwargs):
         post_id = kwargs['post_id']
@@ -324,12 +347,21 @@ class CommentViewSet(viewsets.ModelViewSet):
         ok_response = dict_to_json({"query": "addComment", "success": True, "message": "Comment Added"})
         forbidden_response = dict_to_json({"query": "addComment", "success": False, "message": "Comment not allowed"})
 
-        serializer = self.get_serializer_class()(data=request.data, context={'request': request})
+        try:
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExist:
+            raise Http404
+        post_serializer = PostSerializer(post, many=False)
 
-        if serializer.is_valid(raise_exception=True):
-            self.perform_create(serializer)
+        if check_psot_permission(post_serializer.data, self.request.user):      # if the user has permission to read the post
+            request.data["author"] = request.user.id
+            serializer = self.get_serializer_class()(data=request.data, context={'request': request})
+
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
             return Response(ok_response, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(forbidden_response, status=status.HTTP_403_FORBIDDEN)
 
     def list(self, request, *args, **kwargs):
         post_id = kwargs['post_id']
