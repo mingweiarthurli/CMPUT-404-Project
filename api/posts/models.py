@@ -2,6 +2,7 @@ from django.db import models
 
 # Create your models here.
 import uuid
+import json
 from django.utils import timezone
 from users.models import User
 
@@ -28,14 +29,26 @@ class Post(models.Model):
     author = models.ForeignKey(User, on_delete = models.CASCADE, related_name="post_author")
     categories = models.TextField(default="[]")
     # count = models.IntegerField(default=0)
-    size = models.IntegerField(default=50)
-    next = models.URLField(null=False, blank=True)
+    # size = models.IntegerField(default=50)
+    # next = models.URLField(null=False, blank=True)
     # comments = models.TextField(default="[]")       #
     published = models.DateTimeField(auto_now_add = True)            # time of the post created
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     visibility = models.TextField(choices=VISIBILITY_CHOICES, default='PUBLIC')
     visibleTo = models.TextField(default="[]")
     unlisted = models.BooleanField(default=False)
+
+    # def set_categories(self, text):
+    #     self.categories = json.dumps(text)
+
+    # def get_categories(self):
+    #     return json.loads(self.categories)
+
+    # def set_visibleTo(self, text):
+    #     self.visibleTo = json.dumps(text)
+
+    # def get_visibleTo(self):
+    #     return json.loads(self.visibleTo)
 
 class Comment(models.Model):
     # post = models.ForeignKey(Post, on_delete = models.CASCADE, default=1, related_name="post_comment")
