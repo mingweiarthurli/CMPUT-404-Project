@@ -142,9 +142,9 @@ STATIC_URL = '/static/'
 #         'rest_framework_simplejwt.authentication.JWTAuthentication',
 #     )
 # }
-# REST_FRAMEWORK = {
-#     'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
-# }
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
+}
 # django-rest-auth @& allauth settings
 SITE_ID = 1
 AUTH_USER_MODEL = "users.User"

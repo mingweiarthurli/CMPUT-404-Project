@@ -26,6 +26,7 @@ class UserViewSet(mixins.RetrieveModelMixin,
 
     list:
         Return all users,ordered by ID.
+        
         Permission:
             Any users: read only
 
