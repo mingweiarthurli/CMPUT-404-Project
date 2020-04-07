@@ -75,31 +75,18 @@ def get_visible_posts(posts, user):
 
     return visible_posts
 
+def get_user_posts(posts, user_id):
+    '''
+    get posts of specific author
+    '''
+    user_post_list = []
+    for post in posts:
+        post_author_host = post["author"]["host"]
+        post_author_url = post["author"]["id"]
+        if post_author_url == f"{post_author_host}author/{user_id}":
+            user_post_list.append(post)
 
-    # exclude_posts = []
-
-    # for post in posts:
-    #     if post["author"]["id"] != user_url:
-    #         if post.visibility == "PRIVATE":                # not author and the post is private
-    #             exclude_posts.append(post.id)
-    #         elif post.visibility == "FRIENDS" :             # not author and the post is friends visible
-    #             visible = check_friend(post.author, user)
-    #             if not visible:
-    #                 exclude_posts.append(post.id)
-    #         elif post.visibility == "FOAF":              # not author and the post is FOAF visible
-    #             visible = check_FOAF(post.author, user)
-    #             if not visible:
-    #                 exclude_posts.append(post.id)
-    #         # elif post.visibility == 5:              # not author and the post is another author visible
-    #         #     if post.another_author != user:
-    #         #         exclude_posts.append(post.id)
-    #         # elif obj.visibility == 6:               # not author and the post is friends on same host visible
-    #         #     # TODO: check friendship
-
-    # for exclude_post in exclude_posts:
-    #     posts = posts.exclude(id=exclude_post)
-
-    # return posts
+    return user_post_list
 
 def get_public_posts(posts):
     public_posts = []
@@ -107,6 +94,31 @@ def get_public_posts(posts):
         if post["visibility"] == "PUBLIC":
             public_posts.append(post)
     return public_posts
+
+def get_posts(user, only_public, specify_author, author_id):
+    '''
+    Return the posts that the user has permission to see.
+    If only_public is True, return only public posts.
+    If specify_author is True, return the posts of specified user.
+    '''
+    queryset = Post.objects.filter(Q(visibility="PUBLIC") & Q(unlisted=False))      # local posts
+    serializer = PostSerializer(queryset, many=True)
+
+    remote_posts = helper.get_remote_posts("https://spongebook-develop.herokuapp.com/")
+    post_list = serializer.data + remote_posts
+
+    if only_public and specify_author:
+        post_list = get_public_posts(post_list)
+        post_list = get_user_posts(post_list, author_id)
+    elif only_public:
+        post_list = get_public_posts(post_list)
+    elif specify_author:
+        post_list = get_user_posts(post_list, author_id)
+    else:
+        post_list = get_visible_posts(post_list, user)
+
+    return post_list
+
 
 # code reference:
 # Andreas Poyiatzis; https://medium.com/@apogiatzis/create-a-restful-api-with-users-and-jwt-authentication-using-django-1-11-drf-part-2-eb6fdcf71f45
@@ -169,53 +181,72 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user)
 
     def list(self, request):
-        queryset = Post.objects.filter(Q(visibility="PUBLIC") & Q(unlisted=False))      # local posts
-        serializer = self.get_serializer_class()(queryset, many=True, context={'request': request})
+        public_post_list = get_posts(request.user, True, False, None)
 
-        remote_posts = helper.get_remote_posts("https://spongebook-develop.herokuapp.com/")
-        post_list = serializer.data + remote_posts
-        public_post_list = get_public_posts(post_list)
-        # return Response(serializer.data)
         return Response(public_post_list)
 
-class VisiblePostView(APIView):
-    '''
-    Return all posts that visible to the currently authenticated user.
-    '''
-
-    # see more: https://www.django-rest-framework.org/api-guide/filtering/#filtering-against-the-url
-    # serializer_class = PostSerializer
-    # permission_classes = (PostVisibility,)
-
-    def get(self, request):
+    @action(detail=False, methods="GET")
+    def visible_posts(self, request, *args, **kwargs):
         if self.request.user.is_anonymous:      # to check if current user is an anonymous user first, since Q query cannot accept anonymous user
-            return Post.objects.filter(Q(visibility="PUBLIC") & Q(unlisted=False))
+            public_post_list = get_posts(request.user, True, False, None)
+
+            return Response(public_post_list)
         else:
-            queryset = Post.objects.filter(Q(unlisted=False))   # local posts
-            serializer = PostSerializer(queryset, many=True, context={'request': request})
-            remote_posts = helper.get_remote_posts("https://spongebook-develop.herokuapp.com/")
-            post_list = serializer.data + remote_posts
-            visible_post_list = get_visible_posts(post_list, request.user)
+            visible_post_list = get_posts(request.user, False, False, None)
 
-            return visible_post_list
+            return Response(visible_post_list)
 
-class VisibleUserPostView(generics.ListAPIView):
-    '''
-    Return all posts of specified user that visible to the currently authenticated user.
-    '''
-    
-    # see more: https://www.django-rest-framework.org/api-guide/filtering/#filtering-against-the-url
-    serializer_class = PostSerializer
-    permission_classes = (PostVisibility,)
-
-    def get_queryset(self):
+    @action(detail=False, methods="GET")
+    def visible_user_posts(self, request, *args, **kwargs):
         user_id = self.kwargs['user_id']
 
         if self.request.user.is_anonymous:      # to check if current user is an anonymous user first, since Q query cannot accept anonymous user
-            return Post.objects.filter(Q(visibility="PUBLIC") & Q(author=user_id) & Q(unlisted=False))
+            public_user_post_list = get_posts(request.user, True, True, user_id)
+
+            return Response(public_user_post_list)
         else:
-            posts = get_visible_posts(Post.objects.filter(Q(author=user_id) & Q(unlisted=False)), self.request.user)
-            return posts
+            visible_user_post_list = get_posts(request.user, False, True, user_id)
+
+            return Response(visible_user_post_list)
+
+# class VisiblePostView(APIView):
+#     '''
+#     Return all posts that visible to the currently authenticated user.
+#     '''
+
+#     # see more: https://www.django-rest-framework.org/api-guide/filtering/#filtering-against-the-url
+#     # serializer_class = PostSerializer
+#     # permission_classes = (PostVisibility,)
+
+#     def get(self, request):
+#         if self.request.user.is_anonymous:      # to check if current user is an anonymous user first, since Q query cannot accept anonymous user
+#             return Post.objects.filter(Q(visibility="PUBLIC") & Q(unlisted=False))
+#         else:
+#             queryset = Post.objects.filter(Q(unlisted=False))   # local posts
+#             serializer = PostSerializer(queryset, many=True, context={'request': request})
+#             remote_posts = helper.get_remote_posts("https://spongebook-develop.herokuapp.com/")
+#             post_list = serializer.data + remote_posts
+#             visible_post_list = get_visible_posts(post_list, request.user)
+
+#             return visible_post_list
+
+# class VisibleUserPostView(generics.ListAPIView):
+#     '''
+#     Return all posts of specified user that visible to the currently authenticated user.
+#     '''
+    
+#     # see more: https://www.django-rest-framework.org/api-guide/filtering/#filtering-against-the-url
+#     serializer_class = PostSerializer
+#     permission_classes = (PostVisibility,)
+
+#     def get_queryset(self):
+#         user_id = self.kwargs['user_id']
+
+#         if self.request.user.is_anonymous:      # to check if current user is an anonymous user first, since Q query cannot accept anonymous user
+#             return Post.objects.filter(Q(visibility="PUBLIC") & Q(author=user_id) & Q(unlisted=False))
+#         else:
+#             posts = get_visible_posts(Post.objects.filter(Q(author=user_id) & Q(unlisted=False)), self.request.user)
+#             return posts
 
 class CommentViewSet(viewsets.ModelViewSet):
     '''
