@@ -9,6 +9,15 @@ from allauth.account import adapter, utils
 from config import settings
 from users.models import User, Host
 
+class UserRawSerializer(serializers.ModelSerializer):
+    '''
+    This serializer is for updating/creating those raw data fields (first_name, last_name, etc.).
+    '''
+
+    class Meta:
+        model = User
+        fields = ('id', 'host', 'url', 'github', 'first_name', 'last_name', 'email', 'bio', 'userType')
+
 class UserSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField(read_only=True)
     url = serializers.SerializerMethodField(read_only=True)
@@ -18,7 +27,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'host', 'displayName', 'url', 'github', 'firstName', 'lastName', 'email', 'bio')
+        fields = ('id', 'host', 'displayName', 'url', 'github', 'firstName', 'lastName', 'email', 'bio', 'userType')
 
     def get_id(self, obj):
         return f"{obj.host}author/{obj.id}"

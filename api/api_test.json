@@ -2,16 +2,16 @@ POST /friendrequest/
 {
     "query":"friendrequest",
     "author": {
-        "id":"https://cmput-404-project.herokuapp.com/author/6fbb1f1f-d793-4e46-af23-776516890033",
-        "host":"https://cmput-404-project.herokuapp.com/",
-        "displayName":"admin",
-        "url":"https://cmput-404-project.herokuapp.com/author/6fbb1f1f-d793-4e46-af23-776516890033"
-    },
-    "friend": {
-        "id":"https://cmput-404-project.herokuapp.com/author/77532446-1d81-4e78-a5f2-9a79b295c776",
+        "id":"https://cmput-404-project.herokuapp.com/author/391daca7-e3f9-4cfa-8c15-c0a47ad9af8b",
         "host":"https://cmput-404-project.herokuapp.com/",
         "displayName":"user1",
-        "url":"https://cmput-404-project.herokuapp.com/author/77532446-1d81-4e78-a5f2-9a79b295c776"
+        "url":"https://cmput-404-project.herokuapp.com/author/391daca7-e3f9-4cfa-8c15-c0a47ad9af8b"
+    },
+    "friend": {
+        "id":"https://cmput-404-project.herokuapp.com/author/627cd4f6-81f5-40bb-a836-5377ab94cb30",
+        "host":"https://cmput-404-project.herokuapp.com/",
+        "displayName":"admin",
+        "url":"https://cmput-404-project.herokuapp.com/author/627cd4f6-81f5-40bb-a836-5377ab94cb30"
 
     }
 }
@@ -19,16 +19,16 @@ POST /friendrequest/
 {
     "query":"friendrequest",
     "author": {
-        "id":"https://cmput-404-project.herokuapp.com/author/898d4703-f173-4a40-a634-890c74a621c5",
+        "id":"https://cmput-404-project.herokuapp.com/author/cfdca915-eafa-4d8e-ad20-dd581ee0c3ff",
         "host":"https://cmput-404-project.herokuapp.com/",
         "displayName":"user2",
-        "url":"https://cmput-404-project.herokuapp.com/author/898d4703-f173-4a40-a634-890c74a621c5"
+        "url":"https://cmput-404-project.herokuapp.com/author/cfdca915-eafa-4d8e-ad20-dd581ee0c3ff"
     },
     "friend": {
-        "id":"https://cmput-404-project.herokuapp.com/author/77532446-1d81-4e78-a5f2-9a79b295c776",
+        "id":"https://cmput-404-project.herokuapp.com/author/391daca7-e3f9-4cfa-8c15-c0a47ad9af8b",
         "host":"https://cmput-404-project.herokuapp.com/",
         "displayName":"user1",
-        "url":"https://cmput-404-project.herokuapp.com/author/77532446-1d81-4e78-a5f2-9a79b295c776"
+        "url":"https://cmput-404-project.herokuapp.com/author/391daca7-e3f9-4cfa-8c15-c0a47ad9af8b"
 
     }
 }
