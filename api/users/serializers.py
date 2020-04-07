@@ -16,7 +16,7 @@ class UserRawSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'host', 'url', 'github', 'first_name', 'last_name', 'email', 'bio')
+        fields = ('id', 'host', 'url', 'github', 'first_name', 'last_name', 'email', 'bio', 'userType')
 
 class UserSerializer(serializers.ModelSerializer):
     id = serializers.SerializerMethodField(read_only=True)
@@ -27,7 +27,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'host', 'displayName', 'url', 'github', 'firstName', 'lastName', 'email', 'bio')
+        fields = ('id', 'host', 'displayName', 'url', 'github', 'firstName', 'lastName', 'email', 'bio', 'userType')
 
     def get_id(self, obj):
         return f"{obj.host}author/{obj.id}"

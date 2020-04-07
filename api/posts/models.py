@@ -40,7 +40,7 @@ class Post(models.Model):
 class Comment(models.Model):
     # post = models.ForeignKey(Post, on_delete = models.CASCADE, default=1, related_name="post_comment")
     post = models.TextField(blank=False, default=1)
-    author = author = models.ForeignKey(User, on_delete = models.CASCADE, related_name="comment_author")
+    author = models.ForeignKey(User, on_delete = models.CASCADE, related_name="comment_author")
     comment = models.TextField(blank=True, max_length=2000)
     contentType = models.TextField(choices=TEXT_TYPE_CHOICES, default='text/plain')
     published = models.DateTimeField(auto_now_add = True)            # time of the comment created

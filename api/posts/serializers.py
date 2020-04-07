@@ -8,14 +8,14 @@ from users.serializers import AuthorInfoSerializer
 
 from config.settings import DEFAULT_HOST
 
-class CommentSerializer(serializers.HyperlinkedModelSerializer):
+class CommentSerializer(serializers.ModelSerializer):
     author = AuthorInfoSerializer(many=False, read_only=True)
 
     class Meta:
         model = Comment
         fields = ('author', 'comment', 'contentType', 'published', 'id')
 
-class CommentEditSerializer(serializers.HyperlinkedModelSerializer):
+class CommentEditSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ('post', 'author', 'comment', 'contentType', 'published', 'id')

@@ -7,6 +7,7 @@ from knox.models import AuthToken
 
 from users.models import User
 from users.serializers import UserSerializer, UserRawSerializer, UserSerializer, AuthorLogInSerializer
+from users.permissions import IsOwnerOrAdminOrReadOnly
 
 
 # code reference:
@@ -20,20 +21,45 @@ class UserViewSet(mixins.RetrieveModelMixin,
     retrieve:
         Return a user instance.
 
+        Permission:
+            Any users: read only
+
     list:
         Return all users,ordered by ID.
+        
+        Permission:
+            Any users: read only
 
     delete:
         Remove a existing user.
 
+        Permission:
+            Admin: delete permission
+            Author: delete permission
+            Other users: denied
+
     partial_update:
         Update one or more fields on a existing user.
 
+        Permission:
+            Admin: write permission
+            Author: write permission (except userType and approved fields)
+            Other users: read only permission
+        If the request user is unauthorized or has no permission, a status code "403 Forbidden" will be returned.
+
     update:
         Update a user.
+
+        Permission:
+            Admin: write permission
+            Author: write permission (except userType and approved fields)
+            Other users: read only permission
+        If the request user is unauthorized or has no permission, a status code "403 Forbidden" will be returned.
     '''
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrAdminOrReadOnly)
 
     def current_author(self, req):
         if req.user.is_authenticated:
@@ -45,6 +71,10 @@ class UserViewSet(mixins.RetrieveModelMixin,
             return Response({"authenticated": False}, status=status.HTTP_401_UNAUTHORIZED)
 
     def update(self, request, *args, **kwargs):
+        # userType and approved fields cannot be modified by users except admin
+        if ("userType" in request.data or "approved" in request.data) and (request.user.userType != "admin" or not request.user.is_superuser):
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
         # convert firstName and lastName to first_name and last_name
         if "firstName" in request.data:
             request.data["first_name"] = request.data["firstName"]
