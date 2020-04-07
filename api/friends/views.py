@@ -91,6 +91,7 @@ class FriendRequestView(mixins.CreateModelMixin,
         followee_id = re.findall(r"(https?://[-A-Za-z0-9+&@#%?=~_|!:,.;]+/)author/([-A-Za-z0-9]+)/?", followee["id"], re.I)[0][1]
         follower_id = re.findall(r"(https?://[-A-Za-z0-9+&@#%?=~_|!:,.;]+/)author/([-A-Za-z0-9]+)/?", follower["id"], re.I)[0][1]
 
+        # allow the user send request again if this user is rejected or unfollowed
         rejected_request = Friend.objects.filter(Q(followee_id=followee_id) & Q(follower_id=follower_id) & Q(mutual=False))
         num_rejected_request = rejected_request.count()
         if num_rejected_request > 0:
