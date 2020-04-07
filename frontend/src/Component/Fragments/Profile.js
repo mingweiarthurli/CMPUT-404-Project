@@ -5,36 +5,39 @@ import {
   Form,
   FormGroup,
   Header,
+  Label,
   Divider,
   Button,
-  TextArea
+  TextArea,
 } from "semantic-ui-react";
 import { patchProfile } from "../../ApiFetchers/putters/Axios";
 import { SliceLocalID } from "../../ClassSupport/APICalls/SliceLocalID";
-const ProfileForm = props => {
+const ProfileForm = (props) => {
+  let localToken = localStorage.getItem("currentToken");
   let ph = props.props;
   const [homeNav, setHomeNav] = useState(false);
   const [profile, setProfile] = useState({
     firstname: ph.firstname,
     lastname: ph.lastname,
-    displayName: ph.displayName,
     email: ph.email,
     github: ph.github,
     bio: ph.bio,
+    displayName: ph.displayName,
     url: ph.url,
     id: ph.id,
-    host: ph.host
+    host: ph.host,
   });
-  const handleChange = name => e => {
+  const handleChange = (name) => (e) => {
     e.preventDefault();
     setProfile({ ...profile, [name]: e.target.value });
   };
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     console.log(profile);
-    patchProfile(SliceLocalID(), profile);
+    patchProfile(SliceLocalID(), profile, localToken);
+    setHomeNav(true);
   };
-  const handleRedir = e => {
+  const handleRedir = (e) => {
     e.preventDefault();
     setHomeNav(true);
   };
@@ -52,7 +55,7 @@ const ProfileForm = props => {
             content="Homepage"
             icon="left arrow"
             labelPosition="left"
-            onClick={e => {
+            onClick={(e) => {
               handleRedir(e);
             }}
           />
@@ -65,20 +68,14 @@ const ProfileForm = props => {
               <Form.Input
                 label="first name"
                 fluid
-                placeholder={ph.firstname}
+                placeholder={ph.firstName}
                 onChange={handleChange("firstname")}
               />
               <Form.Input
                 label="last name"
                 fluid
-                placeholder={ph.lastname}
+                placeholder={ph.lastName}
                 onChange={handleChange("lastname")}
-              />
-              <Form.Input
-                label="display name"
-                fluid
-                placeholder={ph.displayName}
-                onChange={handleChange("displayName")}
               />
             </FormGroup>
             <FormGroup widths="equal">
@@ -95,6 +92,7 @@ const ProfileForm = props => {
                 onChange={handleChange("github")}
               />
             </FormGroup>
+            <Label>bio</Label>
             <TextArea
               placeholder={ph.bio}
               label="my bio"
@@ -102,13 +100,16 @@ const ProfileForm = props => {
             />
             <Divider horizontal>Advanced</Divider>
             <Header as="h5" textAlign="center">
-              ID: {ph.id}
+              ID: {ph.id} {"\n"}
             </Header>
             <Header as="h5" textAlign="center">
-              HOST: {ph.host}
+              DISPLAY-NAME: {ph.displayName} {"\n"}
             </Header>
             <Header as="h5" textAlign="center">
-              URL: {ph.url}
+              HOST: {ph.host} {"\n"}
+            </Header>
+            <Header as="h5" textAlign="center">
+              URL: {ph.url} {"\n"}
             </Header>
             <Button
               type="submit"

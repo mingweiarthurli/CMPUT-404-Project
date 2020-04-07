@@ -48,6 +48,7 @@ const SignInForm = () => {
           localSave("currentToken", currentToken);
           localSave("currentID", res.data.id);
           localSave("currentHost", res.data.host);
+          localSave("currentURL", res.data.url);
           setAuthenticated(true);
         })
         .catch((e) => {

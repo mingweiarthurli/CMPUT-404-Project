@@ -8,75 +8,94 @@ import {
   TextArea,
   Select,
 } from "semantic-ui-react";
+import { addPost } from "../../ApiFetchers/posters/Axios";
 import { SliceLocalID } from "../../ClassSupport/APICalls/SliceLocalID";
 const typeOptions = [
   {
-    key: "plaintext",
+    key: "text/plain",
     text: "Plain Text",
-    value: "plaintext",
+    value: "text/plain",
   },
   {
-    key: "markdown",
+    key: "text/markdown",
     text: "Mark Down",
-    value: "markdown",
+    value: "text/markdown",
+  },
+  {
+    key: "application/base64",
+    text: "Base 64",
+    value: "application/base64",
+  },
+  {
+    key: "image/png;base64",
+    text: "image/png;base64",
+    value: "image/png;base64",
+  },
+  {
+    key: "image/jpeg;based64",
+    text: "image/jpeg;base64",
+    value: "image/jpeg;base64",
   },
 ];
 const visabilityOptions = [
   {
-    key: "public",
+    key: "PUBLIC",
     text: "Public",
-    value: "public",
+    value: "PUBLIC",
   },
 
   {
-    key: "foaf",
+    key: "FOAF",
     text: "FOAF",
-    value: "foaf",
+    value: "FOAF",
   },
   {
-    key: "friends",
+    key: "FRIENDS",
     text: "Friends",
-    value: "friends",
+    value: "FRIENDS",
   },
 
   {
-    key: "friendsonhost",
-    text: "Friends on My Host",
-    value: "friendsonhost",
+    key: "PRIVATE",
+    text: "Private",
+    value: "PRIVATE",
   },
   {
-    key: "myself",
-    text: "Myself",
-    value: "myself",
+    key: "SERVERONLY",
+    text: "ServerOnly",
+    value: "SERVERONLY",
   },
 ];
 const NewPostForm = () => {
+  const localToken = localStorage.getItem("currentToken");
   const [ready, setReady] = useState({
     error: false,
     redirecting: false,
   });
   const [dataSet, setDataSet] = useState({
-    title: "", //
-    categories: "", //
-    description: "", //
-    contentType: "", //
-    content: "", //
-    author: SliceLocalID(), //
-    visibility: "", //
+    title: "",
+    categories: "",
+    description: "",
+    contentType: "",
+    content: "",
+    author: {
+      host: localStorage.getItem("currentHost"),
+      github: localStorage.getItem("currentHost"),
+    }, //
+    visibility: "",
+    visibleTo: "", //
     size: 0, //
     next: "", //
     unlisted: false, //
-    //comments: [],
-    //origin: "",
-    //source: "",
-    //count: 0,
-    //published: "",
-    //id: "",
   });
   const handleSubmit = (e) => {
     e.preventDefault();
     setReady({ ...ready, error: false });
-    console.log(dataSet);
+    const postIt = async () => {
+      const res = await addPost(dataSet, localToken);
+      console.log(res);
+    };
+    postIt();
   };
   const handleInput = (name) => (event) => {
     //simply sets the states using input value as user types

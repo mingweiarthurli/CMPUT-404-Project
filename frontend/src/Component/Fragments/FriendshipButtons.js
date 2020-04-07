@@ -1,87 +1,121 @@
 import React, { Fragment, useState, useEffect } from "react";
 import {
-  getMyFollowers,
   getMyFriendRequests,
-  getMyFriends
+  getMyFriends,
 } from "../../ApiFetchers/getters/Axios";
+import { iAccept, iReject } from "../../ApiFetchers/putters/Axios";
+import { SliceLocalID } from "../../ClassSupport/APICalls/SliceLocalID";
 import {
   Label,
   Menu,
   List,
   Button,
   Modal,
-  ListContent
+  ListContent,
 } from "semantic-ui-react";
-var localID = localStorage.getItem("currentID");
+
+var localID = SliceLocalID();
 const FriendshipButtons = () => {
-  const [activeItem, setActiveItem] = useState("Followers");
+  const localToken = localStorage.getItem("currentToken");
+  //Rendering Followers
   const [followersLoading, setFollowersLoading] = useState(true);
   const [followersError, setFollowersError] = useState(false);
   const [followers, setFollowers] = useState([]);
-  const [friendRequestsLoading, setFriendRequestsLoading] = useState(true);
-  const [friendRequestsError, setFriendRequestsError] = useState(false);
-  const [friendRequests, setFriendRequests] = useState([]);
+  //Rendering Friends
   const [friendsLoading, setFriendsLoading] = useState(true);
   const [friendsError, setFriendsError] = useState(false);
   const [friends, setFriends] = useState([]);
   const handleChange = (e, value) => {
     e.preventDefault();
-    setActiveItem(value);
-    console.log(value);
+    //Reinitialize Clientside States
+    setFollowers((followers) => []);
+    setFriends((friends) => []);
+    //Refresh and Fetch from Server
+    switch (value) {
+      case "Notifications":
+        const followersList = async () => {
+          setFollowersError(false);
+          setFollowersLoading(true);
+          try {
+            if (localID !== undefined) {
+              let friendRequestsFetcher = await getMyFriendRequests(
+                localID,
+                localToken
+              ); //get data from api's url
+              let resArray = friendRequestsFetcher.data.authors;
+              let loopdex = 0;
+              for (let a in resArray) {
+                setFollowers((followers) => [
+                  ...followers,
+                  { index: [loopdex], value: resArray[a] },
+                ]);
+                loopdex += 1;
+              }
+              loopdex = 0;
+            }
+          } catch (error) {
+            setFollowersError(true);
+          }
+          setFollowersLoading(false);
+        };
+        followersList();
+        break;
+      case "Friends":
+        const friendsList = async () => {
+          setFriendsLoading(true);
+          setFriendsError(false);
+          try {
+            if (localID !== undefined) {
+              let friendsFetcher = await getMyFriends(localID, localToken); //get data from api's url
+              let resArray = friendsFetcher.data.authors;
+              let loopdex = 0;
+              for (let a in resArray) {
+                setFriends((friends) => [
+                  ...friends,
+                  { index: [loopdex], value: resArray[a] },
+                ]);
+                loopdex += 1;
+              }
+              loopdex = 0;
+            }
+          } catch (error) {
+            setFriendsError(true);
+          }
+          setFriendsLoading(false);
+        }; //fetch friends
+        friendsList();
+        break;
+      default:
+        return null;
+    }
   };
-  useEffect(() => {
-    const followersList = async () => {
-      setFollowersLoading(true);
-      setFollowersError(false);
-      try {
-        if (localID !== undefined) {
-          let followersFetcher = await getMyFollowers(localID); //get data from api's url
-          setFollowers(followersFetcher.authors);
-        }
-      } catch (error) {
-        setFollowersError(true);
-      }
-      setFollowersLoading(false);
-    }; //fetch followers
-    const friendsList = async () => {
-      setFriendsLoading(true);
-      setFriendsError(false);
-      try {
-        if (localID !== undefined) {
-          let friendsFetcher = await getMyFriends(localID); //get data from api's url
-          setFriends(friendsFetcher.authors);
-        }
-      } catch (error) {
-        setFriendsError(true);
-      }
-      setFriendsLoading(false);
-    }; //fetch friends
-    const friendRequestsList = async () => {
-      setFriendRequestsError(false);
-      setFriendRequestsLoading(true);
-      /*try {
-        if (localID !== undefined) {
-          let friendRequestsFetcher = await getMyFriendRequests(localID); //get data from api's url
-          setFriendRequests(friendRequestsFetcher.authors);
-        }
-      } catch (error) {
-        setFriendRequestsError(true);
-      }*/
-      setFriendRequestsLoading(false);
-    };
-    followersList();
-    friendsList();
-    friendRequestsList();
-  }, []);
 
+  const accepted = async (e, v) => {
+    e.preventDefault();
+    let heading = { Authorization: `Token ${localToken}` };
+    let res = await iAccept(v.slice(-36), heading);
+  };
+
+  const rejected = async (e, v) => {
+    e.preventDefault();
+    let heading = { Authorization: `Token ${localToken}` };
+    let res = await iReject(v.slice(-36), heading);
+  };
+
+  const unFriended = async (e, v) => {
+    e.preventDefault();
+    console.log(v);
+    let heading = { Authorization: `Token ${localToken}` };
+    //let res = await
+  };
   return (
     <Fragment>
       <Modal
         trigger={
           <Menu.Item
-            name="Followers"
-            active={activeItem === "Followers"}
-            onClick={e => handleChange(e, "Followers")}
+            onClick={(e) => {
+              handleChange(e, "Notifications");
+            }}
           >
             Followers
             <Label color="teal">x</Label>
@@ -107,12 +141,24 @@ const FriendshipButtons = () => {
             ) : (
               <List relaxed>
                 {followers !== undefined ? (
-                  followers.map(item => (
-                    <List.Item key={item.id}>
-                      <List.Header>{item.follower}</List.Header>
-                      <ListContent flaoted="right">
-                        <Button>Accept</Button>
-                        <Button>Reject</Button>
+                  followers.map((i) => (
+                    <List.Item key={i.index}>
+                      <List.Header>{i.value}</List.Header>
+                      <ListContent floated="right">
+                        <Button
+                          onClick={(e) => {
+                            accepted(e, i.value);
+                          }}
+                        >
+                          Accept
+                        </Button>
+                        <Button
+                          onClick={(e) => {
+                            rejected(e, i.value);
+                          }}
+                        >
+                          Reject
+                        </Button>
                       </ListContent>
                     </List.Item>
                   ))
@@ -131,9 +177,9 @@ const FriendshipButtons = () => {
       <Modal
         trigger={
           <Menu.Item
-            name="Friends"
-            active={activeItem === "Friends"}
-            onClick={e => handleChange(e, "Friends")}
+            onClick={(e) => {
+              handleChange(e, "Friends");
+            }}
           >
             Friends
             <Label color="teal">y</Label>
@@ -159,65 +205,18 @@ const FriendshipButtons = () => {
             ) : (
               <List relaxed>
                 {friends !== undefined ? (
-                  friends.map(item => (
-                    <List.Item key={item.id}>
+                  friends.map((item) => (
+                    <List.Item key={item.index}>
                       <ListContent>
-                        <List.Header as="a">{item.id}</List.Header>
+                        <List.Header as="a">{item.value}</List.Header>
                         <List.Content floated="right">
-                          <Button>Unfriend</Button>
-                        </List.Content>
-                      </ListContent>
-                    </List.Item>
-                  ))
-                ) : (
-                  <List.Item>
-                    <List.Description>
-                      Something is Not Right...
-                    </List.Description>
-                  </List.Item>
-                )}
-              </List>
-            )}
-          </Modal.Description>
-        </Modal.Content>
-      </Modal>
-      <Modal
-        trigger={
-          <Menu.Item
-            name="Notifications"
-            active={activeItem === "Notifications"}
-            onClick={e => handleChange(e, "Notifications")}
-          >
-            Out-Going Requests
-            <Label color="teal">z</Label>
-          </Menu.Item>
-        }
-      >
-        <Modal.Header>Out Going Requests</Modal.Header>
-        <Modal.Content>
-          <Modal.Description>
-            {friendRequestsError && (
-              <List.Item>
-                <List.Content>
-                  <List.Description>Something went wrong ...</List.Description>
-                </List.Content>
-              </List.Item>
-            )}
-            {friendRequestsLoading ? (
-              <List.Item>
-                <List.Content>
-                  <List.Description>Loading ...</List.Description>
-                </List.Content>
-              </List.Item>
-            ) : (
-              <List relaxed>
-                {friendRequests !== undefined ? (
-                  friendRequests.map(item => (
-                    <List.Item key={item.id}>
-                      <ListContent>
-                        <List.Header as="a">{item.id}</List.Header>
-                        <List.Content floated="right">
-                          <Button>Cancel</Button>
+                          <Button
+                            onClick={(e) => {
+                              unFriended(e, item.value);
+                            }}
+                          >
+                            Unfriend
+                          </Button>
                         </List.Content>
                       </ListContent>
                     </List.Item>

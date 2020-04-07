@@ -18,11 +18,17 @@ import {
 import axios from "axios";
 import {
   getAllUsers,
+  getPublicPosts,
+  getIdUsers,
   getDefaultVisiblePosts,
-  viewablePosts,
+  getIdVisiblePosts,
 } from "../../ApiFetchers/getters/Axios";
+import { startFollowing } from "../../ApiFetchers/posters/Axios";
 
 const SplitContainer = () => {
+  const localHost = localStorage.getItem("currentHost");
+  const current = localStorage.getItem("currentUser");
+  const currentURL = localStorage.getItem("currentURL");
   const [authorData, setAuthorData] = useState([]);
   const [postData, setPostData] = useState([]);
   const [authorLoading, setAuthorLoading] = useState(false);
@@ -45,7 +51,7 @@ const SplitContainer = () => {
       setPostError(false);
       setPostLoading(true);
       try {
-        const postFetcher = await viewablePosts();
+        const postFetcher = await getPublicPosts();
         setPostData(postFetcher.data);
       } catch (error) {
         setPostError(true);
@@ -55,14 +61,39 @@ const SplitContainer = () => {
     getPosts();
     getAuthors();
   }, []);
-  const onAuthorClick = (e) => {
+  //Start Following {uid}.
+  const onAuthorClick = (e, id, name, host, url) => {
     e.preventDefault();
+    let formatter = {
+      author: {
+        id: currentURL,
+        host: localHost,
+        displayName: current,
+        url: currentURL,
+      },
+      friend: {
+        id: id,
+        host: host,
+        displayName: name,
+        url: url,
+      },
+    };
+    const followCaller = async (author, friend) => {
+      //console.log(JSON.stringify(data));
+      const response = await startFollowing(author, friend);
+    };
+    followCaller(formatter.author, formatter.friend);
   };
   return (
     <Container>
       <Grid column={3} divided>
         <Grid.Row>
-          <Grid.Column width={2} textAlign="center">
+          <Grid.Column
+            width={2}
+            style={{
+              textAlign: "center",
+            }}
+          >
             <List.Header>
               <strong>Available Authors</strong>
             </List.Header>
@@ -81,36 +112,58 @@ const SplitContainer = () => {
               </List.Item>
             ) : (
               <List divided relaxed>
-                {authorData.map((item) => (
-                  <List.Item key={item.id}>
-                    <Image
-                      avatar
-                      src="https://react.semantic-ui.com/images/avatar/small/rachel.png"
-                    />
-                    <List.Content>
-                      <List.Header>{item.displayName}</List.Header>
-                      <Button animated size="tiny">
-                        <Button.Content visible>
-                          {item.host === localStorage.getItem("currentHost") ? (
-                            <Icon name="registered" />
-                          ) : (
-                            <Icon name="registered outline" />
-                          )}
-                          Follow
-                        </Button.Content>
-                        <Button.Content hidden>
-                          <Icon name="arrow right" />
-                        </Button.Content>
-                      </Button>
-                    </List.Content>
-                  </List.Item>
-                ))}
+                {authorData.map((item) =>
+                  item.displayName !== current ? (
+                    <List.Item key={item.id}>
+                      <Image
+                        avatar
+                        src="https://react.semantic-ui.com/images/avatar/small/rachel.png"
+                      />
+                      <List.Content>
+                        <List.Header>{item.displayName}</List.Header>
+                        <Button
+                          animated
+                          size="tiny"
+                          onClick={(e) => {
+                            onAuthorClick(
+                              e,
+                              item.id,
+                              item.displayName,
+                              item.host,
+                              item.url
+                            );
+                          }}
+                        >
+                          <Button.Content visible>
+                            {item.host === localHost ? (
+                              <Icon name="registered" />
+                            ) : (
+                              <Icon name="registered outline" />
+                            )}
+                            Follow
+                          </Button.Content>
+                          <Button.Content hidden>
+                            <Icon name="arrow right" />
+                          </Button.Content>
+                        </Button>
+                      </List.Content>
+                    </List.Item>
+                  ) : (
+                    <p key={item.id}></p>
+                  )
+                )}
               </List>
             )}
           </Grid.Column>
           <Grid.Column width={6}>
             <List.Header>
-              <strong>Posts I Can See</strong>
+              <strong>Posts For Me</strong>
+            </List.Header>
+            <Divider></Divider>
+          </Grid.Column>
+          <Grid.Column width={6}>
+            <List.Header>
+              <strong>Public Posts</strong>
             </List.Header>
             <Divider></Divider>
             {postError && (
@@ -192,21 +245,21 @@ const SplitContainer = () => {
                                 </Modal.Header>
                                 <Divider></Divider>
                                 <ModalDescription>
-                                  {post.comments.map((key) => (
+                                  {post.comments.map((cmt) => (
                                     <Card
                                       style={{ backgroundColor: "teal" }}
-                                      key={key.id}
+                                      key={cmt.id}
                                     >
                                       <Card.Content>
                                         <Feed>
                                           <Feed.Event>
                                             <Feed.Content>
                                               <Feed.Date>
-                                                {key.author.displayName} @{" "}
-                                                {key.published}
+                                                {cmt.author.displayName} @{" "}
+                                                {cmt.published}
                                               </Feed.Date>
                                               <Feed.Content>
-                                                {key.comment}
+                                                {cmt.comment}
                                               </Feed.Content>
                                             </Feed.Content>
                                           </Feed.Event>
@@ -245,9 +298,6 @@ const SplitContainer = () => {
                 ))}
               </Item.Group>
             )}
-          </Grid.Column>
-          <Grid.Column width={6}>
-            <div></div>
           </Grid.Column>
         </Grid.Row>
       </Grid>
