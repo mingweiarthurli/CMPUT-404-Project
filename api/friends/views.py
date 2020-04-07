@@ -90,6 +90,15 @@ class FriendRequestView(mixins.CreateModelMixin,
         followee = request.data["friend"]
         followee_id = re.findall(r"(https?://[-A-Za-z0-9+&@#%?=~_|!:,.;]+/)author/([-A-Za-z0-9]+)/?", followee["id"], re.I)[0][1]
         follower_id = re.findall(r"(https?://[-A-Za-z0-9+&@#%?=~_|!:,.;]+/)author/([-A-Za-z0-9]+)/?", follower["id"], re.I)[0][1]
+
+        rejected_request = Friend.objects.filter(Q(followee_id=followee_id) & Q(follower_id=follower_id) & Q(mutual=False))
+        num_rejected_request = rejected_request.count()
+        if num_rejected_request > 0:
+            serializer = FriendSerializer(rejected_request[0], data={"not_read": True}, partial=True, context={'request': request})
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+            return Response(status=status.HTTP_200_OK)
+
         request_data = {"followee_id": followee_id, "followee_host": followee["host"], "followee_name": followee["displayName"], "followee_url": followee["url"],
                      "follower_id": follower_id, "follower_host": follower["host"], "follower_name": follower["displayName"], "follower_url": follower["url"],}
         serializer = self.get_serializer_class()(data=request_data, context={'request': request})
