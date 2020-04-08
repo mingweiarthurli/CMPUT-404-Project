@@ -36,5 +36,6 @@ urlpatterns = [
         path('', include('users.urls')),
         path('', include('friends.urls')),
         path('', include('posts.urls')),
+        path('', include('hosts.urls')),
     ])),
 ]
