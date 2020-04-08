@@ -1,2 +1,0 @@
-django: gunicorn --pythonpath api config.wsgi --log-file -
-node: node frontend/index.js
