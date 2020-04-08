@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Redirect } from "react-router-dom";
 import {
   Button,
   Form,
@@ -7,8 +8,10 @@ import {
   Input,
   TextArea,
   Select,
+  Checkbox,
 } from "semantic-ui-react";
 import { addPost } from "../../ApiFetchers/posters/Axios";
+import { getIdUsers } from "../../ApiFetchers/getters/Axios";
 import { SliceLocalID } from "../../ClassSupport/APICalls/SliceLocalID";
 const typeOptions = [
   {
@@ -67,42 +70,61 @@ const visabilityOptions = [
   },
 ];
 const NewPostForm = () => {
-  const localToken = localStorage.getItem("currentToken");
-  const [ready, setReady] = useState({
-    error: false,
-    redirecting: false,
-  });
+  //const localToken = localStorage.getItem("currentToken");
+  const [refresh, setRefresh] = useState(false);
   const [special, setSpecial] = useState({
-    tagFriend: [],
     cate: "",
   });
   const [dataSet, setDataSet] = useState({
     title: "",
-    categories: [],
     description: "",
     contentType: "",
     content: "",
+    categories: [],
     author: {
-      host: localStorage.getItem("currentHost"),
-      github: localStorage.getItem("currentHost"),
+      id: "",
+      displayName: "",
+      github: "",
+      url: "",
+      host: "",
     }, //
     visibility: "",
-    visibleTo: "", //
-    size: 0, //
-    next: "", //
+    visibleTo: [], //
     unlisted: false, //
   });
   const handleSubmit = (e) => {
     e.preventDefault();
-    setReady({ ...ready, error: false });
     /*if (dataSet.visibility === "PRIVATE"){
 
     } else {*/
     const postIt = async () => {
-      const res = await addPost(dataSet, localToken);
-      console.log(res);
+      //fill in the author data
+      const getAuthor = await getIdUsers(SliceLocalID());
+      let authorData = getAuthor.data;
+      setDataSet({
+        ...dataSet,
+        author: {
+          id: authorData.id,
+          displayName: authorData.displayName,
+          github: authorData.github,
+          url: authorData.url,
+          host: authorData.host,
+        },
+      });
+      if (special.cate) {
+        let splitString = special.cate.split(",");
+        let i;
+        let updater = [];
+        for (i = 0; i < splitString.length; i++) {
+          updater.push(splitString[i]);
+        }
+        setDataSet({ ...dataSet, categories: updater });
+      }
     };
     postIt();
+    let token = localStorage.getItem("currentToken");
+    let res = addPost(dataSet, token);
+    setRefresh(true);
   };
   const handleInput = (name) => (event) => {
     //simply sets the states using input value as user types
@@ -116,11 +138,22 @@ const NewPostForm = () => {
   const handleVisibilitySelect = (e, { value }) => {
     setDataSet({ ...dataSet, visibility: value });
   };
-  /*const specialInputs = () => {
-    if ()
-  }*/
+  const specialInputs = (field) => (event) => {
+    if (field === "categories") {
+      setSpecial({ ...special, cate: event.target.value });
+    } else {
+      setDataSet({ ...dataSet, unlisted: true });
+    }
+  };
+  const formReady = () => {
+    if (refresh === true) {
+      setRefresh(false);
+      window.location.reload();
+    }
+  };
   return (
     <Container>
+      {formReady()}
       <Grid.Row>
         <Grid.Column>
           <Form>
@@ -129,17 +162,15 @@ const NewPostForm = () => {
                 required
                 id="post-title"
                 control={Input}
-                required
                 onChange={handleInput("title")}
                 label="Title"
                 placeholder="Title"
               />
               <Form.Group width="equal">
                 <Form.Field
-                  required
                   id="post-category"
                   control={Input}
-                  onChange={handleInput("categories")}
+                  onChange={specialInputs("categories")}
                   label="Category"
                   placeholder="Category"
                 />
@@ -165,7 +196,6 @@ const NewPostForm = () => {
               style={{ maxHeight: "60px" }}
             />
             <Form.Field
-              required
               id="post-Content"
               control={TextArea}
               label="Content"
@@ -184,10 +214,17 @@ const NewPostForm = () => {
                 value={visSelect}
                 label="Visible To"
               />
+              <Form.Field
+                id="post-unlist"
+                control={Checkbox}
+                onChange={specialInputs("unlisted")}
+                label="Unlisted"
+              />
               <Button
                 color="blue"
                 fluid
                 size="small"
+                type="submit"
                 onClick={(e) => {
                   handleSubmit(e);
                 }}

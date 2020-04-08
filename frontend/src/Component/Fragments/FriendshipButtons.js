@@ -19,6 +19,7 @@ var localID = SliceLocalID();
 const FriendshipButtons = () => {
   const localToken = localStorage.getItem("currentToken");
   //Rendering Followers
+  const [reload, setReload] = useState(false);
   const [followersLoading, setFollowersLoading] = useState(true);
   const [followersError, setFollowersError] = useState(false);
   const [followers, setFollowers] = useState([]);
@@ -26,75 +27,68 @@ const FriendshipButtons = () => {
   const [friendsLoading, setFriendsLoading] = useState(true);
   const [friendsError, setFriendsError] = useState(false);
   const [friends, setFriends] = useState([]);
-  const handleChange = (e, value) => {
+
+  useEffect(() => {
+    const followersList = async () => {
+      setFollowersError(false);
+      setFollowersLoading(true);
+      try {
+        if (localID !== undefined) {
+          let friendRequestsFetcher = await getMyFriendRequests(
+            localID,
+            localToken
+          ); //get data from api's url
+          let resArray = friendRequestsFetcher.data.authors;
+          let loopdex = 0;
+          for (let a in resArray) {
+            setFollowers((followers) => [
+              ...followers,
+              { index: [loopdex], value: resArray[a] },
+            ]);
+            loopdex += 1;
+          }
+          loopdex = 0;
+        }
+      } catch (error) {
+        setFollowersError(true);
+      }
+      setFollowersLoading(false);
+    };
+    const friendsList = async () => {
+      setFriendsLoading(true);
+      setFriendsError(false);
+      try {
+        if (localID !== undefined) {
+          let friendsFetcher = await getMyFriends(localID, localToken); //get data from api's url
+          let resArray = friendsFetcher.data.authors;
+          let loopdex = 0;
+          for (let a in resArray) {
+            setFriends((friends) => [
+              ...friends,
+              { index: [loopdex], value: resArray[a] },
+            ]);
+            loopdex += 1;
+          }
+          loopdex = 0;
+        }
+      } catch (error) {
+        setFriendsError(true);
+      }
+      setFriendsLoading(false);
+    }; //fetch friends
+    friendsList();
+    followersList();
+  }, []);
+
+  const handleReloader = (e) => {
     e.preventDefault();
-    //Reinitialize Clientside States
-    setFollowers((followers) => []);
-    setFriends((friends) => []);
-    //Refresh and Fetch from Server
-    switch (value) {
-      case "Notifications":
-        const followersList = async () => {
-          setFollowersError(false);
-          setFollowersLoading(true);
-          try {
-            if (localID !== undefined) {
-              let friendRequestsFetcher = await getMyFriendRequests(
-                localID,
-                localToken
-              ); //get data from api's url
-              let resArray = friendRequestsFetcher.data.authors;
-              let loopdex = 0;
-              for (let a in resArray) {
-                setFollowers((followers) => [
-                  ...followers,
-                  { index: [loopdex], value: resArray[a] },
-                ]);
-                loopdex += 1;
-              }
-              loopdex = 0;
-            }
-          } catch (error) {
-            setFollowersError(true);
-          }
-          setFollowersLoading(false);
-        };
-        followersList();
-        break;
-      case "Friends":
-        const friendsList = async () => {
-          setFriendsLoading(true);
-          setFriendsError(false);
-          try {
-            if (localID !== undefined) {
-              let friendsFetcher = await getMyFriends(localID, localToken); //get data from api's url
-              let resArray = friendsFetcher.data.authors;
-              let loopdex = 0;
-              for (let a in resArray) {
-                setFriends((friends) => [
-                  ...friends,
-                  { index: [loopdex], value: resArray[a] },
-                ]);
-                loopdex += 1;
-              }
-              loopdex = 0;
-            }
-          } catch (error) {
-            setFriendsError(true);
-          }
-          setFriendsLoading(false);
-        }; //fetch friends
-        friendsList();
-        break;
-      default:
-        return null;
-    }
   };
 
   const accepted = async (e, v) => {
     e.preventDefault();
     let heading = { Authorization: `Token ${localToken}` };
     let res = await iAccept(v.slice(-36), heading);
+    window.location.reload();
   };
 
   const rejected = async (e, v) => {
@@ -103,23 +97,21 @@ const FriendshipButtons = () => {
     let heading = { Authorization: `Token ${localToken}` };
     let res = await iReject(parsed, heading);
     let res2 = await iUnfollow(parsed, heading);
+    window.location.reload();
   };
 
   const unFriended = async (e, v) => {
     e.preventDefault();
     let heading = { Authorization: `Token ${localToken}` };
-    let res = await iUnfollow(v.slice(-36), heading);
-    //let res = await
+    let res = await iUnfollow(v.slice(-36), heading).then((res) => {
+      window.location.reload();
+    });
   };
   return (
     <Fragment>
       <Modal
         trigger={
-          <Menu.Item
-            onClick={(e) => {
-              handleChange(e, "Notifications");
-            }}
-          >
+          <Menu.Item onClick={handleReloader}>
             Followers
             <Label color="teal">x</Label>
           </Menu.Item>
@@ -179,11 +171,7 @@ const FriendshipButtons = () => {
       </Modal>
       <Modal
         trigger={
-          <Menu.Item
-            onClick={(e) => {
-              handleChange(e, "Friends");
-            }}
-          >
+          <Menu.Item onClick={handleReloader}>
             Friends
             <Label color="teal">y</Label>
           </Menu.Item>

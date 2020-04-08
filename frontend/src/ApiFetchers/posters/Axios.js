@@ -59,6 +59,8 @@ export const addPost = (data, auth) => {
   });
 };
 
-export const addComments = (data) => {
-  return axios.post(idPostComments, data);
+export const addComments = (id, data, auth) => {
+  return axios.post(idPostComments(id), data, {
+    headers: { Authorization: `Token ${auth}` },
+  });
 };

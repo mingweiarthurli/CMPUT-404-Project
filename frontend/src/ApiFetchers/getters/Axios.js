@@ -50,12 +50,16 @@ export const getMyFriendRequests = (uid, auth) => {
   });
 };
 
-export const getDefaultVisiblePosts = () => {
-  return axios.get(defaultVisiblePosts());
+export const getDefaultVisiblePosts = (token) => {
+  return axios.get(defaultVisiblePosts(), {
+    headers: { Authorization: `Token ${token}` },
+  });
 };
 
-export const getIdVisiblePosts = (uid) => {
-  return axios.get(idVisiblePosts(uid));
+export const getIdVisiblePosts = (uid, token) => {
+  return axios.get(idVisiblePosts(uid), {
+    headers: { Authorization: `Token ${token}` },
+  });
 };
 
 export const getPublicPosts = () => {

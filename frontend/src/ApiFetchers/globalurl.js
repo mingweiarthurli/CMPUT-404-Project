@@ -105,6 +105,7 @@ export const defaultVisiblePosts = () => {
 //GET: return all posts visible to currently authenticated author
 
 export const idVisiblePosts = (uid) => {
+  console.log(uid);
   return `${host}author/${uid}/posts`;
 };
 //GET: return all posts visible to author with the given {uid}
