@@ -1,5 +1,5 @@
 #!/bin/bash
 
-cd api
+# cd api
 python manage.py makemigrations
 python manage.py migrate
