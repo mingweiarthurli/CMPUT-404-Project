@@ -26,7 +26,7 @@ SECRET_KEY = '#9j2cmz601g-rqnli_-40+jb0oe6!e+xfxc(7t^6#2$vmqaov('
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['cmput-404-project.herokuapp.com', "boiling-bayou-18990.herokuapp.com", '127.0.0.1:8000']
 
 
 # Application definition
