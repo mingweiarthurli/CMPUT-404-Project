@@ -17,7 +17,6 @@ export const patchProfile = (uid, profiledata, auth) => {
     bio: profiledata.bio,
     userType: "author",
   };
-  console.log(temp);
   axios
     .put(idUsers(uid), profiledata, {
       headers: { Authorization: `Token ${auth}` },

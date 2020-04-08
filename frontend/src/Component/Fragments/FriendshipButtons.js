@@ -13,6 +13,7 @@ import {
   Modal,
   ListContent,
 } from "semantic-ui-react";
+import { iUnfollow } from "../../ApiFetchers/removers/Axios";
 
 var localID = SliceLocalID();
 const FriendshipButtons = () => {
@@ -98,14 +99,16 @@ const FriendshipButtons = () => {
 
   const rejected = async (e, v) => {
     e.preventDefault();
+    let parsed = v.slice(-36);
     let heading = { Authorization: `Token ${localToken}` };
-    let res = await iReject(v.slice(-36), heading);
+    let res = await iReject(parsed, heading);
+    let res2 = await iUnfollow(parsed, heading);
   };
 
   const unFriended = async (e, v) => {
     e.preventDefault();
-    console.log(v);
     let heading = { Authorization: `Token ${localToken}` };
+    let res = await iUnfollow(v.slice(-36), heading);
     //let res = await
   };
   return (

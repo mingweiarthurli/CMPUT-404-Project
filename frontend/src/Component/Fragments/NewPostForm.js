@@ -72,9 +72,13 @@ const NewPostForm = () => {
     error: false,
     redirecting: false,
   });
+  const [special, setSpecial] = useState({
+    tagFriend: [],
+    cate: "",
+  });
   const [dataSet, setDataSet] = useState({
     title: "",
-    categories: "",
+    categories: [],
     description: "",
     contentType: "",
     content: "",
@@ -91,6 +95,9 @@ const NewPostForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setReady({ ...ready, error: false });
+    /*if (dataSet.visibility === "PRIVATE"){
+
+    } else {*/
     const postIt = async () => {
       const res = await addPost(dataSet, localToken);
       console.log(res);
@@ -109,6 +116,9 @@ const NewPostForm = () => {
   const handleVisibilitySelect = (e, { value }) => {
     setDataSet({ ...dataSet, visibility: value });
   };
+  /*const specialInputs = () => {
+    if ()
+  }*/
   return (
     <Container>
       <Grid.Row>
@@ -119,6 +129,7 @@ const NewPostForm = () => {
                 required
                 id="post-title"
                 control={Input}
+                required
                 onChange={handleInput("title")}
                 label="Title"
                 placeholder="Title"

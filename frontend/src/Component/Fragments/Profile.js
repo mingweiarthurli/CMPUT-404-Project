@@ -33,7 +33,6 @@ const ProfileForm = (props) => {
   };
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(profile);
     patchProfile(SliceLocalID(), profile, localToken);
     setHomeNav(true);
   };
