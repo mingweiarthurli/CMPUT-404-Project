@@ -64,4 +64,4 @@ class HostViewSet(viewsets.ModelViewSet):
 
     queryset = Host.objects.all()
     serializer_class = HostSerializer
-    permission_classes = (IsAdminOrReadOnly)
+    permission_classes = (IsAdminOrReadOnly,)

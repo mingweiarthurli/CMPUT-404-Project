@@ -4,6 +4,7 @@ from collections import OrderedDict
 from django.db.models import Q
 from config.settings import DEFAULT_HOST
 from friends.models import Friend
+from hosts.models import Host
 
 server_list = ["https://spongebook-develop.herokuapp.com/", ]
 
@@ -17,28 +18,22 @@ def remote_login(host, username, password):
 def get_remote_users():
     pass
 
-def get_remote_posts(host):
-    r = requests.get(host + "author/posts", verify=False)
-    if r.status_code == 200:
-        content = r.json()
-        num_posts = content["count"]
-        posts = content["posts"]
-        returned_posts = []
-        for post in posts:
-        #     # parse the content of post
-        #     if post["contentType"] == "text/plain":
-        #         post["text_type"] = 1
-        #     elif post["contentType"] == "text/markdown":
-        #         post["text_type"] = 2
+def get_remote_posts():
+    returned_posts = []
+    hosts = Host.objects.all()
 
-        #     if "origin" in post:
-        #         post["origin_post"] = post["origin"]
-        #     else:
-        #         post["origin_post"] = ""
-            returned_posts.append(OrderedDict(post))
-        return returned_posts
-    else:
-        return False
+    for host in hosts:
+        r = requests.get(host.baseURL + "author/posts", auth=(host.username, host.password), verify=False)
+        if r.status_code == 200:
+            content = r.json()
+            num_posts = content["count"]
+            posts = content["posts"]
+            for post in posts:
+                origin = re.findall(r"(https?://[-A-Za-z0-9+&@#%?=~_|!:,.;]+/)?", post["origin"], re.I)[0]
+                if origin == host.baseURL and "github" not in post["title"].lower():      # only return the posts from the baseURL server and filter out Github activity
+                    returned_posts.append(OrderedDict(post))
+
+    return returned_posts
 
 def get_remote_friends(host):
     r = requests.get(host, verify=False)
