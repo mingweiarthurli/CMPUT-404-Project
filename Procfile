@@ -1,2 +1,3 @@
 release: chmod u+x release.sh && ./release.sh
-web: gunicorn config.wsgi --log-file -
+api: gunicorn config.wsgi --log-file -
+web: npm start
