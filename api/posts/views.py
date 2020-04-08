@@ -112,7 +112,7 @@ def get_posts(user, only_public, specify_author, author_id):
     queryset = Post.objects.filter(Q(unlisted=False))      # local posts
     serializer = PostSerializer(queryset, many=True)
 
-    remote_posts = helper.get_remote_posts("https://spongebook-develop.herokuapp.com/")
+    remote_posts = helper.get_remote_posts()
     post_list = serializer.data + remote_posts
 
     if only_public and specify_author:
